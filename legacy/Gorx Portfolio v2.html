@@ -1,0 +1,1928 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gorx — Desenvolvedor Frontend & Fullstack</title>
+  <link rel="icon" type="image/svg+xml" href="simbolo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#BFF549',
+            bg: '#0D0D0D',
+            surface: '#141414',
+            border: '#1F1F1F',
+            muted: '#666666',
+          },
+          borderRadius: {
+            DEFAULT: '0',
+            none: '0',
+            sm: '0',
+            md: '0',
+            lg: '0',
+            xl: '0',
+            '2xl': '0',
+            '3xl': '0',
+            full: '0',
+          },
+          fontFamily: {
+            sans: ['Chakra Petch', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          maxWidth: {
+            container: '1200px',
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    * { border-radius: 0 !important; }
+    html { scroll-behavior: smooth; }
+    body { background-color: #0D0D0D; color: #fff; font-family: 'Chakra Petch', sans-serif; }
+
+    /* ── Animação universal: blur + fade + subida ── */
+    .fade-up,
+    .g-up,
+    .g-left,
+    .g-blur {
+      opacity: 0;
+      filter: blur(8px);
+      transform: translateY(18px);
+      transition:
+        opacity   .65s cubic-bezier(.16,1,.3,1) var(--gd,0ms),
+        filter    .6s  cubic-bezier(.16,1,.3,1) var(--gd,0ms),
+        transform .6s  cubic-bezier(.16,1,.3,1) var(--gd,0ms);
+      will-change: transform, opacity, filter;
+    }
+    .fade-up.visible,
+    .g-up.g-in,
+    .g-left.g-in,
+    .g-blur.g-in {
+      opacity: 1;
+      filter: blur(0);
+      transform: none;
+    }
+
+    /* Accordion */
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .accordion-content.open {
+      max-height: 600px;
+    }
+
+    /* Carousel */
+    .carousel-track {
+      display: flex;
+      transition: transform 0.4s ease;
+    }
+    .carousel-slide {
+      min-width: 100%;
+    }
+
+    /* Process card hover */
+    .process-card .reveal {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .process-card:hover .reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .process-card {
+      transition: border-color 0.3s ease, background-color 0.2s ease;
+    }
+    .process-card:hover {
+      border-color: #BFF549 !important;
+      background-color: #141414;
+    }
+
+    /* Primary gradient text */
+    .text-gradient {
+      background: linear-gradient(135deg, #BFF549, #a8e040);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Tech marquee */
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 28s linear infinite;
+    }
+    .marquee-track:hover { animation-play-state: paused; }
+    .marquee-container {
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #0D0D0D; }
+    ::-webkit-scrollbar-thumb { background: #1F1F1F; }
+    ::-webkit-scrollbar-thumb:hover { background: #BFF549; }
+
+    /* Tab active */
+    .tab-btn.active {
+      color: #BFF549;
+      border-bottom: 2px solid #BFF549;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Wordmark fade */
+    .wordmark-fade {
+      background: linear-gradient(to bottom, rgba(191,245,73,0.15) 0%, rgba(191,245,73,0) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Spinner */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Stats bar animation */
+    .stat-bar {
+      width: 0;
+      transition: width 1.5s ease;
+    }
+    .stat-bar.animated {
+      width: var(--target-width);
+    }
+
+    /* ── Feature Tabs ── */
+    .feat-tab { position: relative; overflow: hidden; }
+    .feat-tab-bar {
+      position: absolute; top: 0; left: 0;
+      height: 2px; background: #BFF549; width: 0%;
+    }
+    .feat-tab.is-active { background: #141414; color: #fff; }
+    .feat-tab.is-active svg { stroke: #BFF549; }
+    .feat-tab.is-active .feat-tab-label { color: #BFF549; }
+    .feat-panel { display: none; }
+    .feat-panel.is-active { display: block; }
+    .feat-panel-content {
+      opacity: 0; filter: blur(6px); transform: translateY(8px);
+      transition: opacity .45s cubic-bezier(.16,1,.3,1),
+                  filter .45s cubic-bezier(.16,1,.3,1),
+                  transform .45s cubic-bezier(.16,1,.3,1);
+    }
+    .feat-panel.is-active .feat-panel-content {
+      opacity: 1; filter: none; transform: none;
+    }
+
+    /* ══ UNUSED LEGACY ══ (kept for safety, not rendered) */
+    .hero-scroll-UNUSED { position: relative; height: 400vh; }
+    .hero-sticky-UNUSED {
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: #0D0D0D;
+    }
+    .hero-sticky-UNUSED::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(to right,  #1F1F1F 1px, transparent 1px),
+        linear-gradient(to bottom, #1F1F1F 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: 0.35;
+      pointer-events: none; z-index: 0;
+    }
+    .hero-sticky-UNUSED::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom, transparent, transparent 3px,
+        rgba(0,0,0,0.12) 3px, rgba(0,0,0,0.12) 4px
+      );
+      pointer-events: none; z-index: 1;
+    }
+    .hs-corner { position: absolute; width: 14px; height: 14px; z-index: 5; pointer-events: none; }
+    .hs-c-tl { top: 56px;  left: 44px;  border-top: 1px solid #BFF549; border-left: 1px solid #BFF549; }
+    .hs-c-tr { top: 56px;  right: 44px; border-top: 1px solid #BFF549; border-right: 1px solid #BFF549; }
+    .hs-c-bl { bottom: 48px; left: 44px;  border-bottom: 1px solid #BFF549; border-left: 1px solid #BFF549; }
+    .hs-c-br { bottom: 48px; right: 44px; border-bottom: 1px solid #BFF549; border-right: 1px solid #BFF549; }
+
+    .hs-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 52px;
+      border-bottom: 1px solid #1F1F1F;
+      position: relative; z-index: 20; flex-shrink: 0;
+    }
+    .hs-topbar-l, .hs-topbar-r { display: flex; align-items: center; gap: 18px; }
+    .hs-logo { font-size: 14px; font-weight: 700; letter-spacing: 0.18em; color: #fff; }
+    .hs-logo em { color: #BFF549; font-style: normal; }
+    .hs-sep { width: 1px; height: 14px; background: #1F1F1F; }
+    .hs-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; }
+    .hs-status { display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #666; }
+    .hs-dot { width: 6px; height: 6px; background: #BFF549; animation: hs-blink 2s ease-in-out infinite; }
+    @keyframes hs-blink { 0%,100%{ opacity:1 } 50%{ opacity:.25 } }
+
+    .hs-main {
+      flex: 1; display: grid; grid-template-columns: 1fr 1fr;
+      position: relative; z-index: 20; overflow: hidden;
+    }
+    .hs-left {
+      border-right: 1px solid #1F1F1F;
+      padding: 40px 48px;
+      display: flex; flex-direction: column; justify-content: center; gap: 22px;
+    }
+    .hs-eyebrow {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #BFF549;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .hs-eyebrow::before { content:''; width:20px; height:1px; background:#BFF549; flex-shrink:0; }
+    .hs-headline { font-size: clamp(48px, 5vw, 84px); font-weight: 700; line-height: 0.9; letter-spacing: -0.045em; color: #fff; }
+    .hs-ln    { display: block; overflow: hidden; }
+    .hs-ln-in { display: block; }
+    .hs-acc   { color: #BFF549; }
+    .hs-dim   { color: #666; font-weight: 300; }
+    .hs-desc  { font-size: 13px; color: #666; line-height: 1.75; max-width: 360px; }
+    .hs-ctas  { display: flex; align-items: center; gap: 12px; }
+    .hs-btn-p {
+      background: #BFF549; color: #0D0D0D;
+      font-family: 'Chakra Petch', sans-serif; font-size: 12px; font-weight: 700;
+      padding: 11px 28px; border: none; cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px; letter-spacing: 0.06em;
+      transition: background .15s;
+    }
+    .hs-btn-p:hover { background: #fff; }
+    .hs-btn-g {
+      background: transparent; color: #666;
+      font-family: 'Chakra Petch', sans-serif; font-size: 12px; font-weight: 500;
+      padding: 10px 24px; border: 1px solid #1F1F1F; cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px; transition: border-color .15s, color .15s;
+    }
+    .hs-btn-g:hover { border-color: #BFF549; color: #BFF549; }
+    .hs-stats { display: flex; gap: 28px; padding-top: 18px; border-top: 1px solid #1F1F1F; }
+    .hs-stat  { display: flex; flex-direction: column; gap: 2px; }
+    .hs-stat-n { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+    .hs-stat-n em { color: #BFF549; font-style: normal; }
+    .hs-stat-l { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; }
+
+    .hs-right { padding: 36px 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+    .hs-mwrap { position: relative; width: 100%; max-width: 500px; }
+    .hs-mglow { position: absolute; inset: -60px; background: radial-gradient(ellipse at 50% 50%, rgba(191,245,73,.12) 0%, transparent 65%); pointer-events: none; opacity: 0; }
+    .hs-monitor { width: 100%; border: 1px solid #1F1F1F; overflow: hidden; position: relative; box-shadow: 0 0 0 1px #111; }
+    .hs-bchrome { background: #161616; border-bottom: 1px solid #222; padding: 8px 14px; display: flex; align-items: center; gap: 10px; }
+    .hs-bdots { display: flex; gap: 5px; }
+    .hs-bdot  { width: 10px; height: 10px; background: #2a2a2a; transition: background .4s; }
+    .hs-burl {
+      flex: 1; height: 20px; background: #0e0e0e; border: 1px solid #252525;
+      display: flex; align-items: center; padding: 0 8px;
+      font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #444;
+      overflow: hidden; white-space: nowrap; gap: 0;
+    }
+    .hs-burl-lock { margin-right: 4px; opacity: .3; flex-shrink: 0; transition: opacity .4s; }
+    .hs-burl-text { transition: color .4s; color: #444; }
+    .hs-bcontent { position: relative; aspect-ratio: 16/9; overflow: hidden; }
+
+    .hs-scan {
+      position: absolute; left: 0; right: 0; height: 3px; top: 0;
+      background: linear-gradient(to right, transparent 0%, #BFF549 40%, #fff 50%, #BFF549 60%, transparent 100%);
+      box-shadow: 0 0 18px 4px rgba(191,245,73,.5);
+      opacity: 0; z-index: 10; pointer-events: none;
+    }
+
+    .hs-sraw {
+      position: absolute; inset: 0; background: #fff;
+      padding: 12px 16px; font-family: Times New Roman, serif;
+      font-size: 11.5px; color: #000; line-height: 1.6; overflow: hidden;
+    }
+    .hs-sraw .rr-nav { background: #efefef; border: 1px solid #ccc; padding: 4px 8px; margin-bottom: 8px; font-size: 10.5px; }
+    .hs-sraw .rr-nav a { color: #0000EE; text-decoration: underline; margin-right: 9px; }
+    .hs-sraw h1 { font-size: 18px; font-weight: bold; margin-bottom: 2px; }
+    .hs-sraw h2 { font-size: 13px; font-weight: bold; margin: 8px 0 3px; }
+    .hs-sraw .rr-proj { border: 1px solid #ccc; padding: 5px 7px; margin-bottom: 5px; background: #f6f6f6; font-size: 10.5px; }
+    .hs-sraw .rr-proj strong { display: block; margin-bottom: 1px; }
+    .hs-sraw .rr-tag { color: #555; font-size: 9.5px; }
+    .hs-sraw ul { padding-left: 15px; margin: 3px 0; }
+    .hs-sraw li { font-size: 10.5px; margin-bottom: 1px; }
+    .hs-sraw a { color: #0000EE; text-decoration: underline; }
+
+    .hs-sstyled { position: absolute; inset: 0; background: #0D0D0D; display: grid; grid-template-columns: 64px 1fr; opacity: 0; }
+    .hs-msidebar { background: #0D0D0D; border-right: 1px solid #1F1F1F; padding: 12px 7px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .hs-mlogo { width: 15px; height: 15px; background: #BFF549; }
+    .hs-mnav { display: flex; flex-direction: column; gap: 3px; width: 100%; }
+    .hs-mnav-item { display: flex; align-items: center; gap: 5px; font-family: 'Chakra Petch', sans-serif; font-size: 7px; color: #555; padding: 3px 4px; }
+    .hs-mnav-item.a { color: #BFF549; }
+    .hs-mnav-dot { width: 3px; height: 3px; background: #2a2a2a; flex-shrink: 0; }
+    .hs-mnav-item.a .hs-mnav-dot { background: #BFF549; }
+    .hs-mmain { padding: 12px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+    .hs-mname { font-family: 'Chakra Petch', sans-serif; font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1; }
+    .hs-mrole { font-family: 'JetBrains Mono', monospace; font-size: 7.5px; color: #BFF549; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
+    .hs-mdiv  { height: 1px; background: #1F1F1F; }
+    .hs-mslabel { font-family: 'JetBrains Mono', monospace; font-size: 7.5px; color: #444; text-transform: uppercase; letter-spacing: 0.1em; }
+    .hs-mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .hs-mcard { background: #141414; border: 1px solid #1F1F1F; padding: 7px 8px; }
+    .hs-mcard-t { font-family: 'Chakra Petch', sans-serif; font-size: 8px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+    .hs-mcard-tag { font-family: 'JetBrains Mono', monospace; font-size: 7px; color: #BFF549; text-transform: uppercase; }
+    .hs-mcard-bar { width: 100%; height: 2px; background: #1F1F1F; margin-top: 6px; position: relative; overflow: hidden; }
+    .hs-mcard-bar::after { content:''; position:absolute; left:0; top:0; height:100%; background: #BFF549; }
+    .hs-mcard-bar.b70::after { width:70%; }
+    .hs-mcard-bar.b85::after { width:85%; }
+    .hs-mcard-bar.b55::after { width:55%; }
+    .hs-mcard-bar.b90::after { width:90%; }
+
+    .hs-mfooter { display: flex; justify-content: space-between; margin-top: 8px; }
+    .hs-mflabel { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.08em; transition: color .3s; }
+    .hs-mfpct   { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #BFF549; }
+
+    .hs-bottom {
+      border-top: 1px solid #1F1F1F; padding: 0 48px; height: 44px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: relative; z-index: 20; flex-shrink: 0;
+    }
+    .hs-prog-group { display: flex; align-items: center; gap: 14px; flex: 1; max-width: 360px; }
+    .hs-prog-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; }
+    .hs-prog-track { flex: 1; height: 2px; background: #1F1F1F; position: relative; overflow: hidden; }
+    .hs-prog-fill  { position: absolute; left: 0; top: 0; height: 100%; background: #BFF549; width: 0%; box-shadow: 0 0 8px rgba(191,245,73,.6); }
+    .hs-prog-pct   { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #BFF549; min-width: 30px; text-align: right; }
+    .hs-tech-row   { display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .hs-tech-row span { color: #666; transition: color .3s; }
+    .hs-tech-row .hs-dot-sep { color: #2a2a2a; }
+    .hs-scroll-hint {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #666;
+      text-transform: uppercase; letter-spacing: 0.1em; transition: opacity .3s;
+    }
+    .hs-shbox { width: 14px; height: 20px; border: 1px solid #1F1F1F; display: flex; align-items: flex-start; justify-content: center; padding-top: 3px; }
+    .hs-shinner { width: 2px; height: 5px; background: #BFF549; animation: hs-sh 1.6s ease-in-out infinite; }
+    @keyframes hs-sh { 0%,100%{ transform:translateY(0); opacity:1 } 60%{ transform:translateY(6px); opacity:.2 } }
+  </style>
+</head>
+<body class="relative z-10">
+
+  <!-- ===================== HEADER ===================== -->
+  <header id="header" class="sticky top-0 z-50 bg-bg/90 backdrop-blur-sm border-b border-border">
+    <div class="max-w-container mx-auto border-x border-border px-6 flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="#" class="flex items-center">
+        <img src="logo.svg" alt="Gorx" class="h-8 w-auto">
+      </a>
+      <!-- Nav -->
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="#sobre" class="text-sm text-muted hover:text-white transition-colors">Sobre</a>
+        <a href="#servicos" class="text-sm text-muted hover:text-white transition-colors">Habilidades</a>
+        <a href="#projetos" class="text-sm text-muted hover:text-white transition-colors">Projetos</a>
+        <a href="#processo" class="text-sm text-muted hover:text-white transition-colors">Processo</a>
+        <a href="#contato" class="text-sm text-muted hover:text-white transition-colors">Contato</a>
+      </nav>
+      <!-- CTA -->
+      <a href="#contato" class="hidden md:inline-flex items-center gap-2 bg-primary text-bg px-5 py-2 text-sm font-bold hover:bg-white transition-colors">
+        Falar comigo
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <!-- Mobile menu btn -->
+      <button id="mobile-menu-btn" class="md:hidden text-muted hover:text-white">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <!-- Mobile nav -->
+    <div id="mobile-nav" class="hidden md:hidden border-t border-border bg-bg">
+      <div class="max-w-container mx-auto border-x border-border px-6 py-4 flex flex-col gap-4">
+        <a href="#sobre" class="text-sm text-muted hover:text-white transition-colors">Sobre</a>
+        <a href="#servicos" class="text-sm text-muted hover:text-white transition-colors">Habilidades</a>
+        <a href="#projetos" class="text-sm text-muted hover:text-white transition-colors">Projetos</a>
+        <a href="#processo" class="text-sm text-muted hover:text-white transition-colors">Processo</a>
+        <a href="#contato" class="text-sm text-muted hover:text-white transition-colors">Contato</a>
+        <a href="#contato" class="bg-primary text-bg px-5 py-2 text-sm font-bold text-center hover:bg-white transition-colors">Falar comigo</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section id="hero" class="border-b border-border">
+    <div class="max-w-container mx-auto border-x border-border">
+
+      <!-- Hero copy -->
+      <div class="flex flex-col items-center text-center px-6 pt-16 pb-12 border-b border-border">
+        <div class="fade-up inline-flex items-center gap-2 border border-border px-3 py-1 text-xs font-mono text-muted mb-5">
+          <span class="w-2 h-2 bg-primary inline-block"></span>
+          Disponível para novos projetos em 2026
+        </div>
+        <h1 class="fade-up text-4xl md:text-6xl font-bold leading-none tracking-tight mb-6">
+          Desenvolvo<br>
+          <span class="text-gradient">interfaces rápidas</span><br>
+          <span class="text-white">e código limpo.</span>
+        </h1>
+        <div class="fade-up flex flex-wrap gap-3 justify-center">
+          <a href="#contato" class="bg-primary text-bg px-7 py-2.5 font-bold text-sm hover:bg-white transition-colors">Falar comigo</a>
+          <a href="#projetos" class="border border-border px-7 py-2.5 text-sm font-medium text-white hover:border-primary hover:text-primary transition-colors">Ver projetos</a>
+        </div>
+      </div>
+
+      <!-- Feature Tabs -->
+      <div id="feat-tabs">
+
+        <!-- Tab list -->
+        <div class="flex border-b border-border" role="tablist" id="feat-tablist">
+
+          <button class="feat-tab flex-1 relative flex flex-col items-center justify-center gap-2 py-5 border-r border-border cursor-pointer text-muted hover:text-white hover:bg-surface transition-colors" data-tab="0" role="tab">
+            <div class="feat-tab-bar"></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18"/><path d="M3 9h18M9 21V9"/></svg>
+            <span class="feat-tab-label font-mono text-[10px] uppercase tracking-widest">Interfaces</span>
+          </button>
+
+          <button class="feat-tab flex-1 relative flex flex-col items-center justify-center gap-2 py-5 border-r border-border cursor-pointer text-muted hover:text-white hover:bg-surface transition-colors" data-tab="1" role="tab">
+            <div class="feat-tab-bar"></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <span class="feat-tab-label font-mono text-[10px] uppercase tracking-widest">Design System</span>
+          </button>
+
+          <button class="feat-tab flex-1 relative flex flex-col items-center justify-center gap-2 py-5 border-r border-border cursor-pointer text-muted hover:text-white hover:bg-surface transition-colors" data-tab="2" role="tab">
+            <div class="feat-tab-bar"></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span class="feat-tab-label font-mono text-[10px] uppercase tracking-widest">Performance</span>
+          </button>
+
+          <button class="feat-tab flex-1 relative flex flex-col items-center justify-center gap-2 py-5 border-r border-border cursor-pointer text-muted hover:text-white hover:bg-surface transition-colors" data-tab="3" role="tab">
+            <div class="feat-tab-bar"></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            <span class="feat-tab-label font-mono text-[10px] uppercase tracking-widest">Fullstack</span>
+          </button>
+
+          <button class="feat-tab flex-1 relative flex flex-col items-center justify-center gap-2 py-5 cursor-pointer text-muted hover:text-white hover:bg-surface transition-colors" data-tab="4" role="tab">
+            <div class="feat-tab-bar"></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+            <span class="feat-tab-label font-mono text-[10px] uppercase tracking-widest">Integração</span>
+          </button>
+
+        </div>
+
+        <!-- Tab panels -->
+        <div class="relative" style="height:500px; overflow:hidden;">
+
+          <!-- Panel 0 · Interfaces -->
+          <div class="feat-panel absolute inset-0 overflow-hidden" data-panel="0">
+            <div class="feat-panel-content h-full" style="background:#0f0f0f;">
+              <!-- browser chrome -->
+              <div style="background:#0D0D0D;border-bottom:1px solid #1F1F1F;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                <div style="display:flex;gap:5px;"><div style="width:10px;height:10px;background:#2a2a2a;"></div><div style="width:10px;height:10px;background:#2a2a2a;"></div><div style="width:10px;height:10px;background:#2a2a2a;"></div></div>
+                <div style="flex:1;background:#141414;border:1px solid #1F1F1F;padding:4px 10px;font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">localhost:6006 — Storybook</div>
+              </div>
+              <div style="display:grid;grid-template-columns:190px 1fr;height:calc(100% - 41px);">
+                <!-- sidebar -->
+                <div style="border-right:1px solid #1F1F1F;padding:14px 12px;overflow:hidden;">
+                  <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#BFF549;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">Components</p>
+                  <div style="display:flex;flex-direction:column;gap:1px;">
+                    <div style="padding:5px 8px;font-size:11px;color:#BFF549;background:rgba(191,245,73,.07);border-left:1px solid #BFF549;">Button</div>
+                    <div style="padding:5px 8px;font-size:11px;color:#555;border-left:1px solid transparent;">Input</div>
+                    <div style="padding:5px 8px;font-size:11px;color:#555;border-left:1px solid transparent;">Card</div>
+                    <div style="padding:5px 8px;font-size:11px;color:#555;border-left:1px solid transparent;">Badge</div>
+                    <div style="padding:5px 8px;font-size:11px;color:#555;border-left:1px solid transparent;">Modal</div>
+                    <div style="padding:5px 8px;font-size:11px;color:#555;border-left:1px solid transparent;">Table</div>
+                    <div style="padding:5px 8px;font-size:11px;color:#555;border-left:1px solid transparent;">Select</div>
+                    <div style="padding:5px 8px;font-size:11px;color:#555;border-left:1px solid transparent;">Tooltip</div>
+                    <div style="padding:5px 8px;font-size:11px;color:#555;border-left:1px solid transparent;">Tabs</div>
+                    <div style="padding:5px 8px;font-size:11px;color:#555;border-left:1px solid transparent;">Dropdown</div>
+                  </div>
+                </div>
+                <!-- preview -->
+                <div style="padding:28px 32px;display:flex;flex-direction:column;gap:20px;">
+                  <div>
+                    <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Variants</p>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                      <div style="background:#BFF549;color:#0D0D0D;font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;padding:8px 18px;">Primary</div>
+                      <div style="border:1px solid #1F1F1F;color:#fff;font-family:'Chakra Petch',sans-serif;font-size:11px;padding:8px 18px;">Secondary</div>
+                      <div style="border:1px solid #BFF549;color:#BFF549;font-family:'Chakra Petch',sans-serif;font-size:11px;padding:8px 18px;">Outline</div>
+                      <div style="color:#555;font-family:'Chakra Petch',sans-serif;font-size:11px;padding:8px 18px;">Ghost</div>
+                    </div>
+                  </div>
+                  <div style="height:1px;background:#1F1F1F;"></div>
+                  <div>
+                    <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Sizes</p>
+                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                      <div style="background:#BFF549;color:#0D0D0D;font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:700;padding:4px 10px;">XS</div>
+                      <div style="background:#BFF549;color:#0D0D0D;font-family:'Chakra Petch',sans-serif;font-size:10px;font-weight:700;padding:6px 14px;">SM</div>
+                      <div style="background:#BFF549;color:#0D0D0D;font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;padding:8px 18px;">MD</div>
+                      <div style="background:#BFF549;color:#0D0D0D;font-family:'Chakra Petch',sans-serif;font-size:13px;font-weight:700;padding:10px 22px;">LG</div>
+                    </div>
+                  </div>
+                  <div style="height:1px;background:#1F1F1F;"></div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7;color:#555;">
+                    <span style="color:#BFF549;">const</span> <span style="color:#fff;">Button</span> <span style="color:#555;">= ({</span> <span style="color:#BFF549;">variant</span><span style="color:#555;">, </span><span style="color:#BFF549;">size</span><span style="color:#555;">, </span><span style="color:#BFF549;">children</span> <span style="color:#555;">}) =&gt; (</span><br>
+                    &nbsp;&nbsp;<span style="color:#555;">&lt;</span><span style="color:#BFF549;">button</span> <span style="color:#fff;">className</span><span style="color:#555;">={cn(</span><span style="color:#BFF549;">base</span><span style="color:#555;">, </span><span style="color:#BFF549;">variants</span><span style="color:#555;">[variant], </span><span style="color:#BFF549;">sizes</span><span style="color:#555;">[size])}&gt;</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#555;">{children}</span><br>
+                    &nbsp;&nbsp;<span style="color:#555;">&lt;/</span><span style="color:#BFF549;">button</span><span style="color:#555;">&gt;</span><br>
+                    <span style="color:#555;">)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 pointer-events-none" style="height:130px;background:linear-gradient(to top,#0D0D0D,transparent);"></div>
+          </div>
+
+          <!-- Panel 1 · Design System -->
+          <div class="feat-panel absolute inset-0 overflow-hidden" data-panel="1">
+            <div class="feat-panel-content h-full" style="background:#0f0f0f;padding:32px 40px;display:flex;flex-direction:column;gap:24px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#BFF549;text-transform:uppercase;letter-spacing:.12em;">Design Tokens</p>
+                <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">v2.4.0 — 128 tokens</p>
+              </div>
+              <!-- Colors -->
+              <div>
+                <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Colors</p>
+                <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;">
+                  <div><div style="height:36px;background:#BFF549;"></div><p style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#555;margin-top:4px;">primary</p></div>
+                  <div><div style="height:36px;background:#0D0D0D;border:1px solid #1F1F1F;"></div><p style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#555;margin-top:4px;">bg</p></div>
+                  <div><div style="height:36px;background:#141414;border:1px solid #1F1F1F;"></div><p style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#555;margin-top:4px;">surface</p></div>
+                  <div><div style="height:36px;background:#1F1F1F;"></div><p style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#555;margin-top:4px;">border</p></div>
+                  <div><div style="height:36px;background:#666666;"></div><p style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#555;margin-top:4px;">muted</p></div>
+                  <div><div style="height:36px;background:#ffffff;"></div><p style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#555;margin-top:4px;">white</p></div>
+                  <div><div style="height:36px;background:linear-gradient(135deg,#BFF549,#a8e040);"></div><p style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#555;margin-top:4px;">gradient</p></div>
+                  <div><div style="height:36px;background:rgba(191,245,73,.12);border:1px solid rgba(191,245,73,.2);"></div><p style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#555;margin-top:4px;">ghost</p></div>
+                </div>
+              </div>
+              <div style="height:1px;background:#1F1F1F;"></div>
+              <!-- Typography -->
+              <div>
+                <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">Typography Scale</p>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;align-items:baseline;gap:16px;"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;min-width:40px;">4xl</span><span style="font-family:'Chakra Petch',sans-serif;font-size:28px;font-weight:700;color:#fff;line-height:1;">Gorx</span><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#333;">700 · 36px</span></div>
+                  <div style="display:flex;align-items:baseline;gap:16px;"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;min-width:40px;">2xl</span><span style="font-family:'Chakra Petch',sans-serif;font-size:20px;font-weight:600;color:#fff;line-height:1;">Section Title</span><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#333;">600 · 24px</span></div>
+                  <div style="display:flex;align-items:baseline;gap:16px;"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;min-width:40px;">base</span><span style="font-family:'Chakra Petch',sans-serif;font-size:14px;color:#999;line-height:1;">Body text — legível e direto</span><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#333;">400 · 14px</span></div>
+                  <div style="display:flex;align-items:baseline;gap:16px;"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;min-width:40px;">mono</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#BFF549;line-height:1;">const gorx = "code"</span><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#333;">JetBrains Mono · 11px</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 pointer-events-none" style="height:130px;background:linear-gradient(to top,#0D0D0D,transparent);"></div>
+          </div>
+
+          <!-- Panel 2 · Performance -->
+          <div class="feat-panel absolute inset-0 overflow-hidden" data-panel="2">
+            <div class="feat-panel-content h-full" style="background:#0f0f0f;padding:32px 40px;display:flex;flex-direction:column;gap:24px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#BFF549;text-transform:uppercase;letter-spacing:.12em;">Core Web Vitals</p>
+                <div style="display:flex;align-items:center;gap:8px;"><div style="width:6px;height:6px;background:#BFF549;"></div><p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#BFF549;">Live — gorx.dev</p></div>
+              </div>
+              <!-- Scores -->
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+                <div style="background:#141414;border:1px solid #1F1F1F;padding:18px 16px;display:flex;flex-direction:column;gap:6px;">
+                  <p style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#444;text-transform:uppercase;">Performance</p>
+                  <p style="font-family:'Chakra Petch',sans-serif;font-size:32px;font-weight:700;color:#BFF549;line-height:1;">98</p>
+                  <div style="height:2px;background:#1F1F1F;"><div style="height:100%;width:98%;background:#BFF549;"></div></div>
+                </div>
+                <div style="background:#141414;border:1px solid #1F1F1F;padding:18px 16px;display:flex;flex-direction:column;gap:6px;">
+                  <p style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#444;text-transform:uppercase;">Accessibility</p>
+                  <p style="font-family:'Chakra Petch',sans-serif;font-size:32px;font-weight:700;color:#BFF549;line-height:1;">100</p>
+                  <div style="height:2px;background:#1F1F1F;"><div style="height:100%;width:100%;background:#BFF549;"></div></div>
+                </div>
+                <div style="background:#141414;border:1px solid #1F1F1F;padding:18px 16px;display:flex;flex-direction:column;gap:6px;">
+                  <p style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#444;text-transform:uppercase;">Best Practices</p>
+                  <p style="font-family:'Chakra Petch',sans-serif;font-size:32px;font-weight:700;color:#BFF549;line-height:1;">96</p>
+                  <div style="height:2px;background:#1F1F1F;"><div style="height:100%;width:96%;background:#BFF549;"></div></div>
+                </div>
+                <div style="background:#141414;border:1px solid #1F1F1F;padding:18px 16px;display:flex;flex-direction:column;gap:6px;">
+                  <p style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#444;text-transform:uppercase;">SEO</p>
+                  <p style="font-family:'Chakra Petch',sans-serif;font-size:32px;font-weight:700;color:#BFF549;line-height:1;">100</p>
+                  <div style="height:2px;background:#1F1F1F;"><div style="height:100%;width:100%;background:#BFF549;"></div></div>
+                </div>
+              </div>
+              <div style="height:1px;background:#1F1F1F;"></div>
+              <!-- Metrics table -->
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;text-transform:uppercase;letter-spacing:.08em;">Vitals Breakdown</p>
+                <div style="display:grid;grid-template-columns:1fr auto auto;gap:0;border:1px solid #1F1F1F;">
+                  <div style="padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;border-bottom:1px solid #1F1F1F;">LCP — Largest Contentful Paint</div>
+                  <div style="padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#BFF549;border-bottom:1px solid #1F1F1F;border-left:1px solid #1F1F1F;">0.8s</div>
+                  <div style="padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;border-bottom:1px solid #1F1F1F;border-left:1px solid #1F1F1F;">Good &lt; 2.5s</div>
+                  <div style="padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;border-bottom:1px solid #1F1F1F;">FID — First Input Delay</div>
+                  <div style="padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#BFF549;border-bottom:1px solid #1F1F1F;border-left:1px solid #1F1F1F;">4ms</div>
+                  <div style="padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;border-bottom:1px solid #1F1F1F;border-left:1px solid #1F1F1F;">Good &lt; 100ms</div>
+                  <div style="padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;">CLS — Cumulative Layout Shift</div>
+                  <div style="padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#BFF549;border-left:1px solid #1F1F1F;">0.02</div>
+                  <div style="padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;border-left:1px solid #1F1F1F;">Good &lt; 0.1</div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 pointer-events-none" style="height:130px;background:linear-gradient(to top,#0D0D0D,transparent);"></div>
+          </div>
+
+          <!-- Panel 3 · Fullstack -->
+          <div class="feat-panel absolute inset-0 overflow-hidden" data-panel="3">
+            <div class="feat-panel-content h-full" style="background:#0f0f0f;">
+              <div style="background:#0D0D0D;border-bottom:1px solid #1F1F1F;padding:10px 16px;display:flex;align-items:center;gap:10px;">
+                <div style="display:flex;gap:5px;"><div style="width:10px;height:10px;background:#2a2a2a;"></div><div style="width:10px;height:10px;background:#2a2a2a;"></div><div style="width:10px;height:10px;background:#2a2a2a;"></div></div>
+                <div style="flex:1;background:#141414;border:1px solid #1F1F1F;padding:4px 10px;font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">gorx-api.vercel.app/docs</div>
+                <div style="background:rgba(191,245,73,.1);border:1px solid rgba(191,245,73,.2);padding:2px 8px;font-family:'JetBrains Mono',monospace;font-size:8px;color:#BFF549;">● Online</div>
+              </div>
+              <div style="padding:24px 32px;display:flex;flex-direction:column;gap:16px;overflow:hidden;">
+                <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#BFF549;text-transform:uppercase;letter-spacing:.12em;">API Routes</p>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <div style="display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:12px;background:#141414;border:1px solid #1F1F1F;padding:10px 14px;">
+                    <span style="background:rgba(191,245,73,.15);color:#BFF549;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;padding:2px 6px;text-align:center;">GET</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;">/api/projects</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">200 · 12ms</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:12px;background:#141414;border:1px solid #1F1F1F;padding:10px 14px;">
+                    <span style="background:rgba(100,180,255,.1);color:#64b4ff;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;padding:2px 6px;text-align:center;">POST</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;">/api/contact</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">201 · 88ms</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:12px;background:#141414;border:1px solid #1F1F1F;padding:10px 14px;">
+                    <span style="background:rgba(191,245,73,.15);color:#BFF549;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;padding:2px 6px;text-align:center;">GET</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;">/api/stack</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">200 · 6ms</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:12px;background:#141414;border:1px solid #1F1F1F;padding:10px 14px;">
+                    <span style="background:rgba(255,180,50,.1);color:#ffb432;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;padding:2px 6px;text-align:center;">PUT</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;">/api/projects/:id</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">200 · 34ms</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:12px;background:#141414;border:1px solid #1F1F1F;padding:10px 14px;">
+                    <span style="background:rgba(255,80,80,.1);color:#ff5050;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;padding:2px 6px;text-align:center;">DEL</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;">/api/projects/:id</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">204 · 18ms</span>
+                  </div>
+                </div>
+                <div style="height:1px;background:#1F1F1F;"></div>
+                <div style="display:flex;gap:24px;">
+                  <div style="display:flex;flex-direction:column;gap:4px;">
+                    <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;text-transform:uppercase;">Stack</p>
+                    <p style="font-family:'Chakra Petch',sans-serif;font-size:12px;color:#fff;">Next.js · Prisma · PostgreSQL</p>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:4px;">
+                    <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;text-transform:uppercase;">Deploy</p>
+                    <p style="font-family:'Chakra Petch',sans-serif;font-size:12px;color:#fff;">Vercel · Edge Runtime</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 pointer-events-none" style="height:130px;background:linear-gradient(to top,#0D0D0D,transparent);"></div>
+          </div>
+
+          <!-- Panel 4 · Integração -->
+          <div class="feat-panel absolute inset-0 overflow-hidden" data-panel="4">
+            <div class="feat-panel-content h-full" style="background:#0f0f0f;padding:32px 40px;display:flex;flex-direction:column;gap:20px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#BFF549;text-transform:uppercase;letter-spacing:.12em;">Automações Ativas</p>
+                <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">4 workflows · 12 triggers</p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <!-- workflow row -->
+                <div style="background:#141414;border:1px solid #1F1F1F;padding:14px 18px;display:flex;align-items:center;gap:16px;">
+                  <div style="width:8px;height:8px;background:#BFF549;flex-shrink:0;"></div>
+                  <div style="flex:1;">
+                    <p style="font-family:'Chakra Petch',sans-serif;font-size:12px;color:#fff;margin-bottom:2px;">Deploy to Production</p>
+                    <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">Push to main → Build → Test → Deploy</p>
+                  </div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#BFF549;border:1px solid rgba(191,245,73,.2);padding:2px 8px;">Active</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">2m 14s</div>
+                </div>
+                <div style="background:#141414;border:1px solid #1F1F1F;padding:14px 18px;display:flex;align-items:center;gap:16px;">
+                  <div style="width:8px;height:8px;background:#BFF549;flex-shrink:0;"></div>
+                  <div style="flex:1;">
+                    <p style="font-family:'Chakra Petch',sans-serif;font-size:12px;color:#fff;margin-bottom:2px;">Lighthouse CI Check</p>
+                    <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">PR open → Score audit → Fail if &lt; 90</p>
+                  </div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#BFF549;border:1px solid rgba(191,245,73,.2);padding:2px 8px;">Active</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">38s</div>
+                </div>
+                <div style="background:#141414;border:1px solid #1F1F1F;padding:14px 18px;display:flex;align-items:center;gap:16px;">
+                  <div style="width:8px;height:8px;background:#BFF549;flex-shrink:0;"></div>
+                  <div style="flex:1;">
+                    <p style="font-family:'Chakra Petch',sans-serif;font-size:12px;color:#fff;margin-bottom:2px;">Email via Resend</p>
+                    <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">Form submit → Validate → Send notification</p>
+                  </div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#BFF549;border:1px solid rgba(191,245,73,.2);padding:2px 8px;">Active</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;">88ms</div>
+                </div>
+                <div style="background:#141414;border:1px solid #1F1F1F;padding:14px 18px;display:flex;align-items:center;gap:16px;">
+                  <div style="width:8px;height:8px;background:#2a2a2a;flex-shrink:0;"></div>
+                  <div style="flex:1;">
+                    <p style="font-family:'Chakra Petch',sans-serif;font-size:12px;color:#555;margin-bottom:2px;">Storybook Publish</p>
+                    <p style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#333;">Merge → Build Storybook → Chromatic sync</p>
+                  </div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#444;border:1px solid #1F1F1F;padding:2px 8px;">Paused</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#333;">—</div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 pointer-events-none" style="height:130px;background:linear-gradient(to top,#0D0D0D,transparent);"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== STACK / TECNOLOGIAS ===================== -->
+  <section id="stack">
+    <div class="max-w-container mx-auto border-x border-border border-y">
+      <div class="px-6 py-4 border-b border-border">
+        <p class="text-xs font-mono text-muted uppercase tracking-widest">Stack & Tecnologias</p>
+      </div>
+      <div class="marquee-container overflow-hidden py-8">
+        <div class="marquee-track">
+          <!-- Set 1 -->
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/html5/ffffff" alt="HTML5" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">HTML5</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/css/ffffff" alt="CSS3" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">CSS3</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/javascript/ffffff" alt="JavaScript" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">JavaScript</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/typescript/ffffff" alt="TypeScript" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">TypeScript</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/react/ffffff" alt="React" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">React</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/nextdotjs/ffffff" alt="Next.js" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Next.js</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/tailwindcss/ffffff" alt="Tailwind" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Tailwind</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/nodedotjs/ffffff" alt="Node.js" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Node.js</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/postgresql/ffffff" alt="PostgreSQL" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">PostgreSQL</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/git/ffffff" alt="Git" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Git</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/figma/ffffff" alt="Figma" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Figma</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/docker/ffffff" alt="Docker" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Docker</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/vercel/ffffff" alt="Vercel" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Vercel</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <div class="w-10 h-10 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="white"><path d="M7 3L7 24L12.5 18.5L16.5 28L20 26.5L16 17L23.5 17Z"/></svg>
+            </div>
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Cursor</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/anthropic/ffffff" alt="Claude" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Claude</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/openai/ffffff" alt="Codex" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Codex</span>
+          </div>
+          <!-- Set 2 (duplicado para loop infinito) -->
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/html5/ffffff" alt="HTML5" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">HTML5</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/css/ffffff" alt="CSS3" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">CSS3</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/javascript/ffffff" alt="JavaScript" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">JavaScript</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/typescript/ffffff" alt="TypeScript" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">TypeScript</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/react/ffffff" alt="React" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">React</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/nextdotjs/ffffff" alt="Next.js" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Next.js</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/tailwindcss/ffffff" alt="Tailwind" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Tailwind</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/nodedotjs/ffffff" alt="Node.js" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Node.js</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/postgresql/ffffff" alt="PostgreSQL" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">PostgreSQL</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/git/ffffff" alt="Git" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Git</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/figma/ffffff" alt="Figma" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Figma</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/docker/ffffff" alt="Docker" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Docker</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/vercel/ffffff" alt="Vercel" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Vercel</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <div class="w-10 h-10 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="white"><path d="M7 3L7 24L12.5 18.5L16.5 28L20 26.5L16 17L23.5 17Z"/></svg>
+            </div>
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Cursor</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/anthropic/ffffff" alt="Claude" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Claude</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default">
+            <img src="https://cdn.simpleicons.org/openai/ffffff" alt="Codex" class="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity">
+            <span class="text-xs font-mono text-muted group-hover:text-white transition-colors">Codex</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Spacer -->
+  <div class="h-20 max-w-container mx-auto border-x border-border"></div>
+
+  <!-- ===================== PROJETOS ===================== -->
+  <section id="projetos">
+    <div class="max-w-container mx-auto border-x border-border border-t">
+      <div class="px-8 py-12 border-b border-border">
+        <p class="text-xs font-mono text-muted uppercase tracking-widest mb-4">/ projetos</p>
+        <h2 class="fade-up text-3xl md:text-4xl font-bold">Trabalhos<br><span class="text-primary">selecionados.</span></h2>
+      </div>
+
+      <!-- Projects grid 6 placeholders -->
+      <div class="grid md:grid-cols-3 grid-cols-1">
+        <!-- Card 1 -->
+        <div id="card-projeto1" class="project-card group border-r border-b border-border overflow-hidden cursor-pointer">
+          <div class="bg-surface aspect-video relative overflow-hidden">
+            <img src="706shots_so.png" alt="Projeto 01 — Lavoro Forwarders" class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors"></div>
+          </div>
+          <div class="px-6 py-5">
+            <span class="text-xs font-mono text-primary border border-primary/30 px-2 py-1">E-commerce</span>
+            <h3 class="font-bold mt-3 group-hover:text-primary transition-colors">Lavoro Equipamentos</h3>
+            <p class="text-sm text-muted mt-1">Catálogo digital de máquinas florestais com foco em performance e conversão</p>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div id="card-projeto2" class="project-card group border-r border-b border-border overflow-hidden cursor-pointer">
+          <div class="bg-surface aspect-video relative overflow-hidden">
+            <img src="560shots_so.png" alt="Projeto 02 — Dens Odontologia" class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors"></div>
+          </div>
+          <div class="px-6 py-5">
+            <span class="text-xs font-mono text-primary border border-primary/30 px-2 py-1">Landing Page</span>
+            <h3 class="font-bold mt-3 group-hover:text-primary transition-colors">Dens Odontologia</h3>
+            <p class="text-sm text-muted mt-1">Landing page para clínica odontológica com foco em agendamento e conversão</p>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div id="card-projeto3" class="project-card group border-b border-border overflow-hidden cursor-pointer">
+          <div class="bg-surface aspect-video relative overflow-hidden">
+            <img src="747shots_so.png" alt="Projeto 03 — Seguro Residencial" class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors"></div>
+          </div>
+          <div class="px-6 py-5">
+            <span class="text-xs font-mono text-primary border border-primary/30 px-2 py-1">Landing Page</span>
+            <h3 class="font-bold mt-3 group-hover:text-primary transition-colors">Ideal Seguros</h3>
+            <p class="text-sm text-muted mt-1">Plataforma de cotação de seguros com as melhores condições do mercado</p>
+          </div>
+        </div>
+        <!-- Card 4 -->
+        <div id="card-projeto4" class="project-card group border-r border-border overflow-hidden cursor-pointer">
+          <div class="bg-surface aspect-video relative overflow-hidden">
+            <img src="193shots_so.png" alt="Projeto 04 — Brasil Legends Motorsport" class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors"></div>
+          </div>
+          <div class="px-6 py-5">
+            <span class="text-xs font-mono text-primary border border-primary/30 px-2 py-1">Plataforma</span>
+            <h3 class="font-bold mt-3 group-hover:text-primary transition-colors">Brasil Legends Motorsport</h3>
+            <p class="text-sm text-muted mt-1">Plataforma de simulação de corridas com ranking e comunidade para pilotos de ACC</p>
+          </div>
+        </div>
+        <!-- Card 5 -->
+        <div id="card-projeto5" class="project-card group border-r border-border overflow-hidden cursor-pointer">
+          <div class="bg-surface aspect-video relative overflow-hidden">
+            <img src="462shots_so.png" alt="Projeto 05 — Fortnari Contabilidade" class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors"></div>
+          </div>
+          <div class="px-6 py-5">
+            <span class="text-xs font-mono text-primary border border-primary/30 px-2 py-1">Landing Page</span>
+            <h3 class="font-bold mt-3 group-hover:text-primary transition-colors">Fortnari Contabilidade</h3>
+            <p class="text-sm text-muted mt-1">Site institucional para escritório contábil com foco em captação de clientes</p>
+          </div>
+        </div>
+        <!-- Card 6 -->
+        <div id="card-projeto6" class="project-card group overflow-hidden cursor-pointer">
+          <div class="bg-surface aspect-video relative overflow-hidden">
+            <img src="689shots_so.png" alt="Projeto 06 — OiAna" class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors"></div>
+          </div>
+          <div class="px-6 py-5">
+            <span class="text-xs font-mono text-primary border border-primary/30 px-2 py-1">Landing Page</span>
+            <h3 class="font-bold mt-3 group-hover:text-primary transition-colors">OiAna</h3>
+            <p class="text-sm text-muted mt-1">Plataforma de agendamentos direto da Dental Uni para beneficiários</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Spacer -->
+  <div class="h-20 max-w-container mx-auto border-x border-border"></div>
+
+  <!-- ===================== SOBRE ===================== -->
+  <section id="sobre">
+    <div class="max-w-container mx-auto border-x border-border border-t">
+      <div class="grid md:grid-cols-2">
+        <!-- Text -->
+        <div class="px-8 py-16 border-r border-border">
+          <p class="text-xs font-mono text-muted uppercase tracking-widest mb-8">/ sobre</p>
+          <h2 class="fade-up text-3xl md:text-4xl font-bold mb-8 leading-tight">
+            <span class="text-primary">Gabriel Gonzales.</span>
+          </h2>
+          <p class="fade-up text-muted leading-relaxed mb-4">
+            <span class="text-white/40">Desenvolvedor frontend & fullstack apaixonado por</span>
+            <span class="text-white font-medium"> interfaces bem feitas e código que escala.</span>
+            <span class="text-white/40"> Trabalho desde o design até o deploy, com foco em</span>
+            <span class="text-white font-medium"> performance, acessibilidade e experiência do usuário.</span>
+          </p>
+          <p class="fade-up text-muted leading-relaxed mb-10">
+            <span class="text-white/40">Gosto de projetos onde</span>
+            <span class="text-white font-medium"> cada detalhe importa</span>
+            <span class="text-white/40"> — da tipografia ao tempo de carregamento, do componente ao sistema de design.</span>
+          </p>
+          <a href="#contato" class="fade-up inline-flex items-center gap-2 bg-primary text-bg px-6 py-3 font-bold text-sm hover:bg-white transition-colors">
+            Falar comigo
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+
+          <!-- Stack -->
+          <div class="fade-up mt-10 pt-8 border-t border-border">
+            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-4">Stack principal</p>
+            <div class="flex flex-wrap gap-2 mb-6">
+              <span class="border border-border px-3 py-1.5 text-xs font-mono text-muted hover:border-primary hover:text-primary transition-colors">React</span>
+              <span class="border border-border px-3 py-1.5 text-xs font-mono text-muted hover:border-primary hover:text-primary transition-colors">Next.js</span>
+              <span class="border border-border px-3 py-1.5 text-xs font-mono text-muted hover:border-primary hover:text-primary transition-colors">TypeScript</span>
+              <span class="border border-border px-3 py-1.5 text-xs font-mono text-muted hover:border-primary hover:text-primary transition-colors">Tailwind</span>
+              <span class="border border-border px-3 py-1.5 text-xs font-mono text-muted hover:border-primary hover:text-primary transition-colors">Node.js</span>
+              <span class="border border-border px-3 py-1.5 text-xs font-mono text-muted hover:border-primary hover:text-primary transition-colors">PostgreSQL</span>
+              <span class="border border-border px-3 py-1.5 text-xs font-mono text-muted hover:border-primary hover:text-primary transition-colors">Figma</span>
+              <span class="border border-border px-3 py-1.5 text-xs font-mono text-muted hover:border-primary hover:text-primary transition-colors">Docker</span>
+              <span class="border border-border px-3 py-1.5 text-xs font-mono text-muted hover:border-primary hover:text-primary transition-colors">Vercel</span>
+            </div>
+            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-4">IA no workflow</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="border border-primary/30 px-3 py-1.5 text-xs font-mono text-primary/70 hover:border-primary hover:text-primary transition-colors flex items-center gap-1.5">
+                <svg width="10" height="10" viewBox="0 0 32 32" fill="currentColor"><path d="M7 3L7 24L12.5 18.5L16.5 28L20 26.5L16 17L23.5 17Z"/></svg>
+                Cursor
+              </span>
+              <span class="border border-primary/30 px-3 py-1.5 text-xs font-mono text-primary/70 hover:border-primary hover:text-primary transition-colors flex items-center gap-1.5">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+                Claude
+              </span>
+              <span class="border border-primary/30 px-3 py-1.5 text-xs font-mono text-primary/70 hover:border-primary hover:text-primary transition-colors flex items-center gap-1.5">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                Codex
+              </span>
+            </div>
+          </div>
+        </div>
+        <!-- Photo -->
+        <div class="bg-surface min-h-[420px] md:min-h-[560px] relative overflow-hidden">
+          <img
+            src="about-photo.png"
+            alt="Retrato de Gorx"
+            class="absolute inset-0 w-full h-full object-cover object-center"
+          >
+          <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(to bottom, rgba(13,13,13,0) 58%, rgba(13,13,13,0.62) 100%);"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Spacer -->
+  <div class="h-20 max-w-container mx-auto border-x border-border"></div>
+
+  <!-- ===================== STATS ===================== -->
+  <section id="stats">
+    <div class="max-w-container mx-auto border-x border-y border-border">
+      <!-- Top 3 stats -->
+      <div class="grid grid-cols-3 border-b border-border">
+        <div class="px-8 py-10 border-r border-border text-center">
+          <p class="text-5xl font-bold text-primary mb-2">+30</p>
+          <p class="text-xs font-mono text-muted uppercase tracking-wider">Projetos entregues</p>
+        </div>
+        <div class="px-8 py-10 border-r border-border text-center">
+          <p class="text-5xl font-bold text-white mb-2">3+</p>
+          <p class="text-xs font-mono text-muted uppercase tracking-wider">Anos programando</p>
+        </div>
+        <div class="px-8 py-10 text-center">
+          <p class="text-5xl font-bold text-white mb-2">12+</p>
+          <p class="text-xs font-mono text-muted uppercase tracking-wider">Tecnologias no stack</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Spacer -->
+  <div class="h-20 max-w-container mx-auto border-x border-border"></div>
+
+  <!-- ===================== COMO FUNCIONA ===================== -->
+  <section id="como-funciona">
+    <div class="max-w-container mx-auto border-x border-y border-border">
+
+      <!-- Header da section -->
+      <div class="px-8 py-10 border-b border-border text-center">
+        <p class="text-xs font-mono text-primary uppercase tracking-widest mb-3">● Como trabalho</p>
+        <h2 class="fade-up text-3xl md:text-4xl font-bold">Do conceito ao deploy<br><span class="text-primary">sem enrolação.</span></h2>
+      </div>
+
+      <!-- Flow -->
+      <div class="flex flex-col md:flex-row items-stretch min-h-64">
+
+        <!-- Card esquerdo: input -->
+        <div class="flex-1 p-6 md:p-8 border-b md:border-b-0 md:border-r border-border flex flex-col justify-between bg-surface">
+          <div>
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-8 h-8 bg-border flex items-center justify-center flex-shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="9" y="2" width="6" height="8"/><path d="M20 22v-3l-3-4H7l-3 4v3"/></svg>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-white">Você</p>
+                <p class="text-xs text-muted font-mono">Colaborador</p>
+              </div>
+              <!-- Waveform decoration -->
+              <div class="ml-auto flex items-center gap-0.5">
+                <span class="w-0.5 h-2 bg-primary/40 inline-block"></span>
+                <span class="w-0.5 h-4 bg-primary/60 inline-block"></span>
+                <span class="w-0.5 h-3 bg-primary inline-block"></span>
+                <span class="w-0.5 h-5 bg-primary/80 inline-block"></span>
+                <span class="w-0.5 h-2 bg-primary/40 inline-block"></span>
+                <span class="w-0.5 h-4 bg-primary/60 inline-block"></span>
+                <span class="w-0.5 h-3 bg-primary/30 inline-block"></span>
+              </div>
+            </div>
+            <p class="text-white text-sm leading-relaxed">
+              "Preciso de uma aplicação responsiva, com boa performance e código organizado que eu consiga evoluir depois."
+            </p>
+          </div>
+          <p class="text-xs font-mono text-muted mt-6 border-t border-border pt-4">INPUT / IDEIA</p>
+        </div>
+
+        <!-- Centro: símbolo -->
+        <div class="flex items-center justify-center px-6 md:px-0 py-8 md:py-0 md:w-48 border-b md:border-b-0 md:border-r border-border relative flex-shrink-0">
+          <!-- Linha conectora esquerda -->
+          <div class="hidden md:block absolute left-0 top-1/2 w-1/2 h-px bg-border"></div>
+          <!-- Linha conectora direita -->
+          <div class="hidden md:block absolute right-0 top-1/2 w-1/2 h-px bg-border"></div>
+          <!-- Símbolo -->
+          <div class="relative z-10">
+            <img src="simbolo.svg" alt="Gorx" class="w-20 h-20 md:w-24 md:h-24">
+          </div>
+        </div>
+
+        <!-- Card direito: output -->
+        <div class="flex-1 p-6 md:p-8 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-3 mb-5">
+              <div class="flex items-center gap-2">
+                <!-- Código chevrons decoration -->
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#BFF549" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#BFF549" stroke-width="1.5"><rect x="3" y="3" width="18" height="18"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#BFF549" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+            </div>
+            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-4">Gorx entrega</p>
+            <p class="text-white text-sm leading-relaxed font-medium">
+              "Código limpo, componentizado, com testes, documentação e deploy configurado — pronto para escalar."
+            </p>
+          </div>
+          <p class="text-xs font-mono text-muted mt-6 border-t border-border pt-4">OUTPUT / CÓDIGO</p>
+        </div>
+
+      </div>
+
+      <!-- Faixa de atributos -->
+      <div class="border-t border-border px-8 py-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+        <span class="text-xs font-mono text-muted uppercase tracking-widest">Código limpo</span>
+        <span class="text-muted text-xs">●</span>
+        <span class="text-xs font-mono text-muted uppercase tracking-widest">Bem documentado</span>
+        <span class="text-muted text-xs">●</span>
+        <span class="text-xs font-mono text-muted uppercase tracking-widest">Performático</span>
+        <span class="text-muted text-xs">●</span>
+        <span class="text-xs font-mono text-muted uppercase tracking-widest">Escalável</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Spacer -->
+  <div class="h-20 max-w-container mx-auto border-x border-border"></div>
+
+  <!-- ===================== SERVIÇOS (ACCORDION) ===================== -->
+  <section id="servicos">
+    <div class="max-w-container mx-auto border-x border-border border-t">
+      <div class="px-8 py-12 border-b border-border">
+        <p class="text-xs font-mono text-muted uppercase tracking-widest mb-4">/ habilidades</p>
+        <h2 class="fade-up text-3xl md:text-4xl font-bold">O que faço.<br><span class="text-primary">Como faço.</span></h2>
+      </div>
+
+      <!-- Accordion item 1 -->
+      <div class="accordion-item border-b border-border">
+        <button class="accordion-trigger w-full flex items-center justify-between px-8 py-6 text-left hover:bg-surface transition-colors" aria-expanded="false">
+          <div class="flex items-center gap-6">
+            <span class="text-xs font-mono text-muted w-8">01</span>
+            <div>
+              <h3 class="text-lg font-bold">Interfaces & Frontend</h3>
+              <p class="text-sm text-muted mt-1">Sites, apps e sistemas com foco em experiência e performance</p>
+            </div>
+          </div>
+          <svg class="accordion-icon flex-shrink-0 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#BFF549" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="accordion-content">
+          <div class="px-8 pb-8 pl-20">
+            <p class="text-muted mb-6 leading-relaxed">Desenvolvimento de interfaces modernas com React e Next.js, desde a prototipação até o deploy. Atenção ao detalhe, performance e acessibilidade em cada componente.</p>
+            <ul class="grid md:grid-cols-2 gap-3">
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                React & Next.js (App Router)
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                TypeScript em todo o projeto
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Tailwind CSS & design systems
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Animações com Framer Motion
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Performance & Web Vitals
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Responsivo & acessível
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion item 2 -->
+      <div class="accordion-item border-b border-border">
+        <button class="accordion-trigger w-full flex items-center justify-between px-8 py-6 text-left hover:bg-surface transition-colors" aria-expanded="false">
+          <div class="flex items-center gap-6">
+            <span class="text-xs font-mono text-muted w-8">02</span>
+            <div>
+              <h3 class="text-lg font-bold">Backend & APIs</h3>
+              <p class="text-sm text-muted mt-1">Aplicações web, APIs REST e integrações entre plataformas</p>
+            </div>
+          </div>
+          <svg class="accordion-icon flex-shrink-0 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#BFF549" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="accordion-content">
+          <div class="px-8 pb-8 pl-20">
+            <p class="text-muted mb-6 leading-relaxed">Construção de APIs e sistemas que sustentam o frontend. Foco em arquitetura limpa, banco de dados bem modelado e integrações confiáveis.</p>
+            <ul class="grid md:grid-cols-2 gap-3">
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Node.js & Express / Fastify
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                PostgreSQL & Prisma ORM
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                APIs REST bem documentadas
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Autenticação JWT & OAuth
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Docker & deploy em cloud
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Testes automatizados
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion item 3 -->
+      <div class="accordion-item">
+        <button class="accordion-trigger w-full flex items-center justify-between px-8 py-6 text-left hover:bg-surface transition-colors" aria-expanded="false">
+          <div class="flex items-center gap-6">
+            <span class="text-xs font-mono text-muted w-8">03</span>
+            <div>
+              <h3 class="text-lg font-bold">UI/UX & Prototipação</h3>
+              <p class="text-sm text-muted mt-1">Do wireframe ao componente final, com consistência e identidade</p>
+            </div>
+          </div>
+          <svg class="accordion-icon flex-shrink-0 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#BFF549" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="accordion-content">
+          <div class="px-8 pb-8 pl-20">
+            <p class="text-muted mb-6 leading-relaxed">Criação de interfaces com foco na experiência do usuário. Uso o Figma para prototipar antes de codar — o que reduz retrabalho e mantém consistência visual.</p>
+            <ul class="grid md:grid-cols-2 gap-3">
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Prototipação no Figma
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Design systems & tokens
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Componentização reutilizável
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Microinterações & animações
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Dark mode & temas
+              </li>
+              <li class="flex items-center gap-3 text-sm text-muted">
+                <span class="w-1 h-1 bg-primary inline-block flex-shrink-0"></span>
+                Acessibilidade (WCAG)
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROCESSO ===================== -->
+  <section id="processo">
+    <div class="max-w-container mx-auto border-x border-border border-t">
+      <div class="px-8 py-12 border-b border-border">
+        <p class="text-xs font-mono text-muted uppercase tracking-widest mb-4">/ como trabalho</p>
+        <h2 class="fade-up text-3xl md:text-4xl font-bold">Método direto.<br><span class="text-primary">Sem enrolação.</span></h2>
+      </div>
+
+      <div class="grid md:grid-cols-3">
+        <!-- Card 1 -->
+        <div class="process-card border-r border-border px-8 py-10 min-h-64 cursor-default">
+          <div class="mb-6">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <rect width="40" height="40" fill="#1F1F1F"/>
+              <path d="M10 20h8M22 20h8M20 10v8M20 22v8" stroke="#BFF549" stroke-width="1.5"/>
+              <circle cx="20" cy="20" r="3" fill="#BFF549"/>
+            </svg>
+          </div>
+          <p class="text-xs font-mono text-muted uppercase tracking-widest mb-3">01 — Descobrir</p>
+          <h3 class="text-xl font-bold mb-3">Entender & Planejar</h3>
+          <p class="text-muted text-sm leading-relaxed mb-6">Entendo o problema antes de escrever qualquer linha. Defino arquitetura, stack e escopo.</p>
+          <div class="reveal border-t border-border pt-6">
+            <p class="text-xs font-mono text-muted">Output: arquitetura definida + stack escolhida + escopo fechado.</p>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="process-card border-r border-border px-8 py-10 min-h-64 cursor-default">
+          <div class="mb-6">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <rect width="40" height="40" fill="#1F1F1F"/>
+              <rect x="8" y="12" width="24" height="16" stroke="#BFF549" stroke-width="1.5"/>
+              <path d="M12 20h6M22 20h6M20 14v12" stroke="#BFF549" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <p class="text-xs font-mono text-muted uppercase tracking-widest mb-3">02 — Construir</p>
+          <h3 class="text-xl font-bold mb-3">Codar & Iterar</h3>
+          <p class="text-muted text-sm leading-relaxed mb-6">Escrevo código limpo, com commits organizados e progresso visível. Feedback é bem-vindo em qualquer etapa.</p>
+          <div class="reveal border-t border-border pt-6">
+            <p class="text-xs font-mono text-muted">Output: PRs revisáveis + código testado + documentação inline.</p>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="process-card px-8 py-10 min-h-64 cursor-default">
+          <div class="mb-6">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <rect width="40" height="40" fill="#1F1F1F"/>
+              <path d="M8 28l8-10 6 6 6-8 4 4" stroke="#BFF549" stroke-width="1.5"/>
+              <circle cx="32" cy="20" r="2" fill="#BFF549"/>
+            </svg>
+          </div>
+          <p class="text-xs font-mono text-muted uppercase tracking-widest mb-3">03 — Escalar</p>
+          <h3 class="text-xl font-bold mb-3">Deploy & Refinar</h3>
+          <p class="text-muted text-sm leading-relaxed mb-6">Entrego com CI/CD configurado, monitoramento ativo e disponível para ajustes após o lançamento.</p>
+          <div class="reveal border-t border-border pt-6">
+            <p class="text-xs font-mono text-muted">Output: aplicação em produção + pipeline configurado + suporte pós-deploy.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA FINAL ===================== -->
+  <section id="cta">
+    <div class="max-w-container mx-auto border-x border-y border-border">
+      <div class="px-8 py-20 md:py-28 text-center relative overflow-hidden">
+        <!-- BG glow -->
+        <div class="absolute inset-0" style="background: radial-gradient(ellipse 80% 50% at 50% 50%, rgba(191,245,73,0.08) 0%, transparent 70%);"></div>
+        <div class="relative">
+          <p class="text-xs font-mono text-muted uppercase tracking-widest mb-6">Vamos conversar</p>
+          <h2 class="fade-up text-4xl md:text-6xl font-bold leading-tight mb-6">
+            Tem um projeto<br><span class="text-gradient">em mente?</span>
+          </h2>
+          <p class="fade-up text-muted text-lg max-w-lg mx-auto mb-10">
+            Me manda uma mensagem. Seja um projeto novo, freela, ou só para trocar uma ideia.
+          </p>
+          <div class="fade-up flex flex-wrap gap-4 justify-center">
+            <a href="#contato" class="bg-primary text-bg px-10 py-4 font-bold text-base hover:bg-white transition-colors">
+              Entrar em contato
+            </a>
+            <a href="https://wa.me/55" class="border border-border px-10 py-4 text-base font-medium hover:border-primary hover:text-primary transition-colors">
+              WhatsApp direto
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Spacer -->
+  <div class="h-20 max-w-container mx-auto border-x border-border"></div>
+
+  <!-- ===================== CONTATO ===================== -->
+  <section id="contato">
+    <div class="max-w-container mx-auto border-x border-border border-t">
+      <div class="grid md:grid-cols-2">
+        <!-- Left: info -->
+        <div class="px-8 py-16 border-r border-border">
+          <p class="text-xs font-mono text-muted uppercase tracking-widest mb-8">/ contato</p>
+          <h2 class="fade-up text-3xl font-bold mb-10">Vamos construir<br><span class="text-primary">algo juntos.</span></h2>
+
+          <div class="flex flex-col gap-6">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 border border-border flex items-center justify-center flex-shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BFF549" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.74 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.65 1.17h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.77a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.06z"/></svg>
+              </div>
+              <div>
+                <p class="text-xs text-muted font-mono mb-1">Telefone / WhatsApp</p>
+                <p class="text-sm font-medium">+55 (xx) xxxxx-xxxx</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 border border-border flex items-center justify-center flex-shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BFF549" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <p class="text-xs text-muted font-mono mb-1">E-mail</p>
+                <p class="text-sm font-medium">contato@gorx.com.br</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 border border-border flex items-center justify-center flex-shrink-0">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BFF549" stroke-width="1.5"><path d="M12 2L3 10v1c0 6 5 10 9 11 4-1 9-5 9-11v-1L12 2z"/><rect x="10" y="8" width="4" height="4"/></svg>
+              </div>
+              <div>
+                <p class="text-xs text-muted font-mono mb-1">Localização</p>
+                <p class="text-sm font-medium">São Paulo, SP — Brasil</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social -->
+          <div class="flex gap-4 mt-10">
+            <a href="#" class="w-10 h-10 border border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors text-muted">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="4" height="4"/><rect x="2" y="9" width="4" height="12"/><path d="M10 9h4v3c1-2 3-3 4-3 3 0 4 2 4 5v8h-4v-7c0-2-1-2-2-2s-2 0-2 2v7h-4V9z"/></svg>
+            </a>
+            <a href="#" class="w-10 h-10 border border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors text-muted">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20"/><rect x="8" y="8" width="8" height="8"/><rect x="15" y="5" width="3" height="3"/></svg>
+            </a>
+            <a href="#" class="w-10 h-10 border border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors text-muted">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+            </a>
+            <a href="#" class="w-10 h-10 border border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors text-muted">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18"/><path d="M7 8l4 4-4 4M14 16h4"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: form -->
+        <div class="px-8 py-16">
+          <form action="" method="POST" class="flex flex-col gap-4">
+            <div>
+              <label class="block text-xs font-mono text-muted uppercase tracking-wider mb-2">Nome completo</label>
+              <input type="text" name="nome" placeholder="Seu nome" class="w-full bg-surface border border-border px-4 py-3 text-sm text-white placeholder-muted focus:outline-none focus:border-primary transition-colors" required>
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-muted uppercase tracking-wider mb-2">Telefone / WhatsApp</label>
+              <input type="tel" name="telefone" placeholder="+55 (xx) xxxxx-xxxx" class="w-full bg-surface border border-border px-4 py-3 text-sm text-white placeholder-muted focus:outline-none focus:border-primary transition-colors">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-muted uppercase tracking-wider mb-2">E-mail</label>
+              <input type="email" name="email" placeholder="seu@email.com" class="w-full bg-surface border border-border px-4 py-3 text-sm text-white placeholder-muted focus:outline-none focus:border-primary transition-colors" required>
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-muted uppercase tracking-wider mb-2">Assunto</label>
+              <select name="assunto" class="w-full bg-surface border border-border px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-colors">
+                <option value="">Selecione...</option>
+                <option value="projeto">Novo projeto</option>
+                <option value="freela">Freela / Colaboração</option>
+                <option value="emprego">Oportunidade de emprego</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-muted uppercase tracking-wider mb-2">Mensagem</label>
+              <textarea name="mensagem" rows="4" placeholder="Conte sobre o projeto, objetivo e prazo..." class="w-full bg-surface border border-border px-4 py-3 text-sm text-white placeholder-muted focus:outline-none focus:border-primary transition-colors resize-none"></textarea>
+            </div>
+            <button type="submit" class="bg-primary text-bg px-8 py-4 font-bold text-sm hover:bg-white transition-colors mt-2 flex items-center justify-center gap-2">
+              Enviar mensagem
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PREVIEW MODAL ===================== -->
+  <div id="preview-modal" class="fixed inset-0 z-[1000] opacity-0 pointer-events-none transition-opacity duration-300" style="background:rgba(0,0,0,0.85); backdrop-filter:blur(6px);">
+    <div class="absolute inset-0 flex flex-col items-center justify-center p-6">
+    <div id="preview-modal-inner" class="w-full flex flex-col items-center scale-95 opacity-0 transition-all duration-300" style="max-width:80vw; flex:1;">
+      <!-- Barra superior -->
+      <div style="width:100%; display:flex; align-items:center; justify-content:space-between; margin-bottom:0; background:#141414; border:1px solid #1F1F1F; border-bottom:none; padding:10px 16px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.1em;">Preview</span>
+          <span id="preview-url-label" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#BFF549;"></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a id="preview-open-link" href="#" target="_blank" rel="noopener" style="display:flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1; color:#666; text-decoration:none; border:1px solid #1F1F1F; padding:0 12px; height:30px; box-sizing:border-box; transition:color 0.2s;" onmouseover="this.style.color='#BFF549';this.style.borderColor='#BFF549'" onmouseout="this.style.color='#666';this.style.borderColor='#1F1F1F'">
+            Abrir no site
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+          <button id="close-modal" style="display:flex; align-items:center; justify-content:center; padding:0 12px; height:30px; box-sizing:border-box; border:1px solid #1F1F1F; background:transparent; color:#666; cursor:pointer; transition:color 0.2s, border-color 0.2s; flex-shrink:0;" onmouseover="this.style.color='#fff';this.style.borderColor='#fff'" onmouseout="this.style.color='#666';this.style.borderColor='#1F1F1F'">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- iframe -->
+      <div style="width:100%; flex:1; max-height:90vh; border:1px solid #1F1F1F; overflow:hidden; position:relative; min-height:500px;">
+        <!-- Spinner -->
+        <div id="preview-spinner" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:#0D0D0D; z-index:10;">
+          <div style="width:32px; height:32px; border:2px solid #1F1F1F; border-top-color:#BFF549; border-radius:50%; animation:spin 0.7s linear infinite;"></div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.1em;">Carregando...</span>
+        </div>
+        <iframe id="preview-iframe" src="" style="width:calc(100% + 17px); height:100%; border:none; min-height:500px; overflow-y:scroll; scrollbar-width:none; opacity:0; transition:opacity 0.4s ease;" allowfullscreen></iframe>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="border-t border-border">
+    <div class="max-w-container mx-auto border-x border-border">
+      <div class="grid md:grid-cols-4 gap-0 border-b border-border">
+        <!-- Brand -->
+        <div class="px-8 py-12 border-r border-border">
+          <div class="flex items-center mb-4">
+            <img src="logo.svg" alt="Gorx" class="h-7 w-auto">
+          </div>
+          <p class="text-sm text-muted leading-relaxed">Desenvolvedor frontend & fullstack. Interfaces rápidas, código limpo, resultado real.</p>
+        </div>
+        <!-- Stack -->
+        <div class="px-8 py-12 border-r border-border">
+          <p class="text-xs font-mono text-muted uppercase tracking-widest mb-6">Stack</p>
+          <ul class="flex flex-col gap-3">
+            <li><span class="text-sm text-muted">React / Next.js</span></li>
+            <li><span class="text-sm text-muted">TypeScript / Node.js</span></li>
+            <li><span class="text-sm text-muted">Tailwind / CSS</span></li>
+          </ul>
+        </div>
+        <!-- Links -->
+        <div class="px-8 py-12 border-r border-border">
+          <p class="text-xs font-mono text-muted uppercase tracking-widest mb-6">Navegação</p>
+          <ul class="flex flex-col gap-3">
+            <li><a href="#sobre" class="text-sm text-muted hover:text-white transition-colors">Sobre</a></li>
+            <li><a href="#projetos" class="text-sm text-muted hover:text-white transition-colors">Projetos</a></li>
+            <li><a href="#processo" class="text-sm text-muted hover:text-white transition-colors">Processo</a></li>
+            <li><a href="#contato" class="text-sm text-muted hover:text-white transition-colors">Contato</a></li>
+          </ul>
+        </div>
+        <!-- Social -->
+        <div class="px-8 py-12">
+          <p class="text-xs font-mono text-muted uppercase tracking-widest mb-6">Redes</p>
+          <ul class="flex flex-col gap-3">
+            <li><a href="#" class="text-sm text-muted hover:text-white transition-colors flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="4" height="4"/><rect x="2" y="9" width="4" height="12"/><path d="M10 9h4v3c1-2 3-3 4-3 3 0 4 2 4 5v8h-4v-7c0-2-1-2-2-2s-2 0-2 2v7h-4V9z"/></svg>
+              LinkedIn
+            </a></li>
+            <li><a href="#" class="text-sm text-muted hover:text-white transition-colors flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20"/><rect x="8" y="8" width="8" height="8"/><rect x="15" y="5" width="3" height="3"/></svg>
+              Instagram
+            </a></li>
+            <li><a href="#" class="text-sm text-muted hover:text-white transition-colors flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+              Twitter / X
+            </a></li>
+            <li><a href="#" class="text-sm text-muted hover:text-white transition-colors flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18"/><path d="M7 8l4 4-4 4M14 16h4"/></svg>
+              GitHub
+            </a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Wordmark gigante -->
+      <div class="overflow-hidden select-none" style="line-height: 0.85;">
+        <p class="wordmark-fade font-display text-center font-bold tracking-tighter" style="font-size: clamp(80px, 20vw, 240px); opacity: 0.15; letter-spacing: -0.04em;">GORX</p>
+      </div>
+
+      <!-- Copyright -->
+      <div class="px-8 py-6 border-t border-border flex items-center justify-between flex-wrap gap-4">
+        <p class="text-xs text-muted font-mono">© 2025 Gorx. Todos os direitos reservados.</p>
+        <p class="text-xs text-muted font-mono">Feito com precisão cirúrgica.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== JS ===================== -->
+  <script>
+
+    // Mobile menu
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileNav.classList.toggle('hidden');
+    });
+    // Close mobile nav on link click
+    mobileNav.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => mobileNav.classList.add('hidden'));
+    });
+
+
+    // ---- ACCORDION (serviços) ----
+    document.querySelectorAll('.accordion-trigger').forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const item = trigger.closest('.accordion-item');
+        const content = item.querySelector('.accordion-content');
+        const icon = trigger.querySelector('.accordion-icon');
+        const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+
+        // Close all
+        document.querySelectorAll('.accordion-item').forEach(i => {
+          i.querySelector('.accordion-trigger').setAttribute('aria-expanded', 'false');
+          i.querySelector('.accordion-content').classList.remove('open');
+          const ic = i.querySelector('.accordion-icon');
+          if (ic) ic.style.transform = 'rotate(0deg)';
+        });
+
+        if (!isOpen) {
+          trigger.setAttribute('aria-expanded', 'true');
+          content.classList.add('open');
+          if (icon) icon.style.transform = 'rotate(45deg)';
+        }
+      });
+    });
+
+
+    // ---- SCROLL REVEAL SYSTEM ----
+    (function() {
+      var STAGGER = 70;
+
+      function applyStagger(map) {
+        map.forEach(function(els) {
+          els.forEach(function(el, i) {
+            el.style.setProperty('--gd', (i * STAGGER) + 'ms');
+          });
+        });
+      }
+
+      // ── fade-up: stagger por grupo de irmãos + replay ──
+      var fadeGroups = new Map();
+      document.querySelectorAll('.fade-up').forEach(function(el) {
+        var p = el.parentElement;
+        if (!fadeGroups.has(p)) fadeGroups.set(p, []);
+        fadeGroups.get(p).push(el);
+      });
+      applyStagger(fadeGroups);
+
+      var fadeObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) e.target.classList.add('visible');
+          else                   e.target.classList.remove('visible');
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      document.querySelectorAll('.fade-up').forEach(function(el) { fadeObs.observe(el); });
+
+      // ── stat bars: replay ──
+      var statObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) e.target.classList.add('animated');
+          else                   e.target.classList.remove('animated');
+        });
+      }, { threshold: 0.3 });
+      document.querySelectorAll('.stat-bar').forEach(function(bar) { statObs.observe(bar); });
+
+      // ── novos elementos: g-up / g-left ──
+      var gGroups = new Map();
+
+      function addG(el, cls) {
+        if (!el || el.hasAttribute('data-g')) return;
+        if (el.closest('header') || el.closest('#hero') || el.closest('#stack')) return;
+        el.setAttribute('data-g', '1');
+        el.classList.add(cls);
+        var p = el.parentElement;
+        if (!gGroups.has(p)) gGroups.set(p, []);
+        gGroups.get(p).push(el);
+      }
+
+      // Labels das seções (p.uppercase dentro de section)
+      document.querySelectorAll('section p.uppercase').forEach(function(el) { addG(el, 'g-left'); });
+
+      // Cards de projetos
+      document.querySelectorAll('.project-card').forEach(function(el) { addG(el, 'g-up'); });
+
+      // Blocos de stats (números grandes)
+      document.querySelectorAll('#stats .grid > div').forEach(function(el) { addG(el, 'g-up'); });
+
+      // Cards de processo
+      document.querySelectorAll('.process-card').forEach(function(el) { addG(el, 'g-up'); });
+
+      // Como funciona — cards do fluxo
+      document.querySelectorAll('#como-funciona > div > div.flex > div').forEach(function(el) { addG(el, 'g-up'); });
+
+      // Contato — itens de info e links sociais
+      document.querySelectorAll('#contato .flex.items-center').forEach(function(el) { addG(el, 'g-up'); });
+      document.querySelectorAll('#contato .flex.gap-4 > a').forEach(function(el) { addG(el, 'g-up'); });
+
+      // ── blur: foto do sobre ──
+      var sobrePhoto = document.querySelector('#sobre .bg-surface');
+      if (sobrePhoto) addG(sobrePhoto, 'g-blur');
+
+      // ── blur: accordion items ──
+      document.querySelectorAll('.accordion-item').forEach(function(el) { addG(el, 'g-blur'); });
+
+      // ── blur: centro do como-funciona (símbolo) ──
+      var cfImg = document.querySelector('#como-funciona img[alt="Gorx"]');
+      if (cfImg) addG(cfImg.closest('[class]'), 'g-blur');
+
+      // ── blur: faixa de atributos do como-funciona ──
+      var cfStrip = document.querySelector('#como-funciona .gap-x-8');
+      if (cfStrip) addG(cfStrip, 'g-blur');
+
+      // ── blur: formulário de contato ──
+      var contactForm = document.querySelector('#contato form');
+      if (contactForm) addG(contactForm.parentElement, 'g-blur');
+
+      // ── blur: colunas do footer ──
+      document.querySelectorAll('footer .grid > div').forEach(function(el) { addG(el, 'g-blur'); });
+
+      // ── blur: wordmark do footer ──
+      var wordmark = document.querySelector('footer .overflow-hidden');
+      if (wordmark) addG(wordmark, 'g-blur');
+
+      applyStagger(gGroups);
+
+      var gObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) e.target.classList.add('g-in');
+          else                   e.target.classList.remove('g-in');
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+      document.querySelectorAll('[data-g]').forEach(function(el) { gObs.observe(el); });
+    })();
+
+    // ---- PREVIEW MODAL ----
+    (function() {
+      const modal = document.getElementById('preview-modal');
+      const inner = document.getElementById('preview-modal-inner');
+      const iframe = document.getElementById('preview-iframe');
+      const closeBtn = document.getElementById('close-modal');
+      const urlLabel = document.getElementById('preview-url-label');
+      const openLink = document.getElementById('preview-open-link');
+
+      const projectLinks = {
+        'card-projeto1': 'https://lavoro-beta.vercel.app',
+        'card-projeto2': 'https://www.dens.com.br',
+        'card-projeto3': 'https://idealinsurance.com.br',
+        'card-projeto4': 'https://www.brasillegendsmotorsport.com.br',
+        'card-projeto5': 'https://fortnari.com.br',
+        'card-projeto6': 'https://oiana-lp.vercel.app',
+      };
+
+      // URLs que bloqueiam iframe (X-Frame-Options) — abrem em nova aba
+      const noEmbed = new Set([
+        'https://oiana-lp.vercel.app',
+      ]);
+
+      const spinner = document.getElementById('preview-spinner');
+
+      iframe.addEventListener('load', () => {
+        spinner.style.display = 'none';
+        iframe.style.opacity = '1';
+      });
+
+      function openModal(url) {
+        if (noEmbed.has(url)) {
+          window.open(url, '_blank', 'noopener,noreferrer');
+          return;
+        }
+        const host = url.replace(/^https?:\/\//, '');
+        urlLabel.textContent = host;
+        openLink.href = url;
+        spinner.style.display = 'flex';
+        iframe.style.opacity = '0';
+        iframe.src = url;
+        document.body.style.overflow = 'hidden';
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100');
+        requestAnimationFrame(() => {
+          inner.classList.remove('scale-95', 'opacity-0');
+          inner.classList.add('scale-100', 'opacity-100');
+        });
+      }
+
+      function closeModal() {
+        inner.classList.remove('scale-100', 'opacity-100');
+        inner.classList.add('scale-95', 'opacity-0');
+        modal.classList.remove('opacity-100');
+        modal.classList.add('opacity-0');
+        setTimeout(() => {
+          modal.classList.add('pointer-events-none');
+          iframe.src = '';
+          iframe.style.opacity = '0';
+          spinner.style.display = 'flex';
+          document.body.style.overflow = '';
+        }, 300);
+      }
+
+      Object.keys(projectLinks).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('click', () => openModal(projectLinks[id]));
+      });
+
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    })();
+
+    // ---- HEADER SCROLL ----
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 20) {
+        header.style.borderBottomColor = '#1F1F1F';
+      } else {
+        header.style.borderBottomColor = '#1F1F1F';
+      }
+    });
+
+    // ---- COUNT UP ----
+    (function() {
+      function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
+
+      document.querySelectorAll('#stats .grid > div > p.text-5xl').forEach(function(el) {
+        var raw    = el.textContent.trim();
+        var num    = parseInt(raw.replace(/[^0-9]/g, ''), 10);
+        var prefix = raw.match(/^\D+/) ? raw.match(/^\D+/)[0] : '';
+        var suffix = raw.match(/\D+$/) ? raw.match(/\D+$/)[0] : '';
+        if (!num) return;
+
+        var raf = null;
+
+        function run() {
+          if (raf) cancelAnimationFrame(raf);
+          var t0 = performance.now();
+          var dur = 1100;
+          (function step(now) {
+            var p = Math.min((now - t0) / dur, 1);
+            el.textContent = prefix + Math.floor(easeOutQuart(p) * num) + suffix;
+            if (p < 1) raf = requestAnimationFrame(step);
+            else { el.textContent = prefix + num + suffix; raf = null; }
+          })(t0);
+        }
+
+        function reset() {
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
+          el.textContent = prefix + '0' + suffix;
+        }
+
+        reset();
+        new IntersectionObserver(function(entries) {
+          entries[0].isIntersecting ? run() : reset();
+        }, { threshold: 0.6 }).observe(el);
+      });
+    })();
+
+    // ---- FEATURE TABS ----
+    (function() {
+      var tabs     = document.querySelectorAll('#feat-tablist .feat-tab');
+      var panels   = document.querySelectorAll('#feat-tabs .feat-panel');
+      var DURATION = 5000;
+      var current  = 0;
+      var startAt  = null;
+      var rafId    = null;
+      var timer    = null;
+
+      function activate(idx) {
+        tabs.forEach(function(t, i) {
+          t.classList.toggle('is-active', i === idx);
+          var bar = t.querySelector('.feat-tab-bar');
+          bar.style.transition = 'none';
+          bar.style.width = '0%';
+        });
+        panels.forEach(function(p, i) {
+          p.classList.toggle('is-active', i === idx);
+        });
+        current = idx;
+      }
+
+      function startProgress() {
+        startAt = performance.now();
+        cancelAnimationFrame(rafId);
+        var bar = tabs[current].querySelector('.feat-tab-bar');
+        bar.style.transition = 'none';
+        bar.style.width = '0%';
+        rafId = requestAnimationFrame(tick);
+      }
+
+      function tick(now) {
+        var elapsed = now - startAt;
+        var pct = Math.min(elapsed / DURATION * 100, 100);
+        var bar = tabs[current].querySelector('.feat-tab-bar');
+        bar.style.width = pct + '%';
+        if (pct < 100) {
+          rafId = requestAnimationFrame(tick);
+        } else {
+          advance();
+        }
+      }
+
+      function advance() {
+        var next = (current + 1) % tabs.length;
+        activate(next);
+        startProgress();
+      }
+
+      tabs.forEach(function(t, i) {
+        t.addEventListener('click', function() {
+          cancelAnimationFrame(rafId);
+          activate(i);
+          startProgress();
+        });
+      });
+
+      activate(0);
+      startProgress();
+    })();
+  </script>
+
+</body>
+</html>

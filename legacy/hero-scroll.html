@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gorx — Hero Scroll</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --g-bg:      #0D0D0D;
+      --g-primary: #BFF549;
+      --g-surface: #141414;
+      --g-border:  #1F1F1F;
+      --g-muted:   #666666;
+    }
+
+    *, *::before, *::after {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+      border-radius: 0 !important;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--g-bg);
+      color: #fff;
+      font-family: 'Chakra Petch', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── SCROLL WRAPPER ─────────────────────────────────── */
+    .hero-scroll { position: relative; height: 400vh; }
+
+    .hero-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: var(--g-bg);
+    }
+
+    /* subtle grid */
+    .hero-sticky::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right,  var(--g-border) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--g-border) 1px, transparent 1px);
+      background-size: 80px 80px;
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* scanlines */
+    .hero-sticky::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.12) 3px,
+        rgba(0,0,0,0.12) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── CORNER ACCENTS ─────────────────────────────────── */
+    .corner {
+      position: absolute;
+      width: 14px; height: 14px;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .c-tl { top: 58px;  left: 44px;  border-top: 1px solid var(--g-primary); border-left: 1px solid var(--g-primary); }
+    .c-tr { top: 58px;  right: 44px; border-top: 1px solid var(--g-primary); border-right: 1px solid var(--g-primary); }
+    .c-bl { bottom: 42px; left: 44px;  border-bottom: 1px solid var(--g-primary); border-left: 1px solid var(--g-primary); }
+    .c-br { bottom: 42px; right: 44px; border-bottom: 1px solid var(--g-primary); border-right: 1px solid var(--g-primary); }
+
+    /* ─── TOP BAR ────────────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 56px;
+      border-bottom: 1px solid var(--g-border);
+      position: relative;
+      z-index: 20;
+      flex-shrink: 0;
+    }
+
+    .topbar-left  { display: flex; align-items: center; gap: 20px; }
+    .topbar-right { display: flex; align-items: center; gap: 20px; }
+
+    .t-logo {
+      font-size: 15px; font-weight: 700;
+      letter-spacing: 0.18em; color: #fff;
+    }
+    .t-logo em { color: var(--g-primary); font-style: normal; }
+
+    .t-sep { width: 1px; height: 14px; background: var(--g-border); }
+
+    .t-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: var(--g-muted);
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+
+    .t-status {
+      display: flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: var(--g-muted);
+    }
+    .t-dot {
+      width: 6px; height: 6px;
+      background: var(--g-primary);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{ opacity:1 } 50%{ opacity:.25 } }
+
+    /* ─── MAIN GRID ──────────────────────────────────────── */
+    .hero-main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      z-index: 20;
+      overflow: hidden;
+    }
+
+    /* ─── LEFT PANEL ─────────────────────────────────────── */
+    .hero-left {
+      border-right: 1px solid var(--g-border);
+      padding: 48px 56px 48px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 28px;
+    }
+
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: var(--g-primary);
+      text-transform: uppercase; letter-spacing: 0.14em;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .eyebrow::before {
+      content: '';
+      width: 20px; height: 1px;
+      background: var(--g-primary);
+      flex-shrink: 0;
+    }
+
+    .headline {
+      font-size: clamp(56px, 6.5vw, 96px);
+      font-weight: 700;
+      line-height: 0.9;
+      letter-spacing: -0.045em;
+    }
+    .headline .ln    { display: block; overflow: hidden; }
+    .headline .ln-in { display: block; }
+    .headline .acc   { color: var(--g-primary); }
+    .headline .dim   { color: var(--g-muted); font-weight: 300; }
+
+    .hero-desc {
+      font-size: 14px; color: var(--g-muted);
+      line-height: 1.75; max-width: 360px;
+    }
+
+    .cta-row { display: flex; align-items: center; gap: 12px; }
+
+    .btn-p {
+      background: var(--g-primary); color: #0D0D0D;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 12px; font-weight: 700;
+      padding: 11px 28px; border: none; cursor: pointer;
+      text-decoration: none; display: inline-flex;
+      align-items: center; gap: 8px; letter-spacing: 0.06em;
+      transition: background .15s;
+    }
+    .btn-p:hover { background: #fff; }
+
+    .btn-g {
+      background: transparent; color: var(--g-muted);
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 12px; font-weight: 500;
+      padding: 10px 24px;
+      border: 1px solid var(--g-border);
+      cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: border-color .15s, color .15s;
+    }
+    .btn-g:hover { border-color: var(--g-primary); color: var(--g-primary); }
+
+    /* stats row */
+    .stats-row {
+      display: flex; gap: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--g-border);
+    }
+    .stat-item { display: flex; flex-direction: column; gap: 3px; }
+    .stat-num {
+      font-size: 22px; font-weight: 700;
+      color: #fff; letter-spacing: -0.02em;
+    }
+    .stat-num em { color: var(--g-primary); font-style: normal; }
+    .stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; color: var(--g-muted);
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+
+    /* ─── RIGHT PANEL ────────────────────────────────────── */
+    .hero-right {
+      padding: 40px 48px 40px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    /* glow behind monitor */
+    .monitor-wrap {
+      position: relative;
+      width: 100%; max-width: 500px;
+    }
+    .monitor-glow {
+      position: absolute;
+      inset: -60px;
+      background: radial-gradient(ellipse at 50% 50%,
+        rgba(191,245,73,.12) 0%, transparent 65%);
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    /* monitor frame */
+    .monitor {
+      width: 100%;
+      border: 1px solid var(--g-border);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 0 1px #111;
+    }
+
+    /* browser chrome bar */
+    .b-chrome {
+      background: #161616;
+      border-bottom: 1px solid #222;
+      padding: 8px 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .b-dots { display: flex; gap: 5px; }
+    .b-dot  { width: 10px; height: 10px; background: #2a2a2a; transition: background .4s; }
+
+    .b-url {
+      flex: 1; height: 20px;
+      background: #0e0e0e;
+      border: 1px solid #252525;
+      display: flex; align-items: center;
+      padding: 0 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; color: #444;
+      overflow: hidden; white-space: nowrap;
+      transition: color .4s;
+    }
+    .b-url .b-lock {
+      margin-right: 5px; opacity: .5;
+      transition: color .4s, opacity .4s;
+    }
+    .b-url-text { transition: color .4s; }
+
+    /* content area */
+    .b-content {
+      position: relative;
+      height: 340px;
+      overflow: hidden;
+    }
+
+    /* ─── SCAN SWEEP ─────────────────────────────────────── */
+    .scan-sweep {
+      position: absolute; left: 0; right: 0;
+      height: 3px; top: 0;
+      background: linear-gradient(to right, transparent 0%, var(--g-primary) 40%, #fff 50%, var(--g-primary) 60%, transparent 100%);
+      box-shadow: 0 0 18px 4px rgba(191,245,73,.5);
+      opacity: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* ─── STATE: RAW ─────────────────────────────────────── */
+    .s-raw {
+      position: absolute; inset: 0;
+      background: #ffffff;
+      padding: 16px 20px;
+      font-family: Times New Roman, Times, serif;
+      font-size: 12.5px; color: #000; line-height: 1.65;
+      overflow: hidden;
+    }
+    .s-raw .r-nav {
+      background: #efefef;
+      border: 1px solid #ccc;
+      padding: 5px 10px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .s-raw .r-nav a { color: #0000EE; text-decoration: underline; margin-right: 10px; }
+    .s-raw h1 { font-size: 20px; font-weight: bold; color: #000; margin-bottom: 3px; }
+    .s-raw h2 { font-size: 15px; font-weight: bold; color: #000; margin: 10px 0 4px; }
+    .s-raw .r-project {
+      border: 1px solid #ccc; padding: 7px 9px;
+      margin-bottom: 7px; background: #f6f6f6; font-size: 11.5px;
+    }
+    .s-raw .r-project strong { display: block; margin-bottom: 2px; }
+    .s-raw .r-tag { color: #555; font-size: 10.5px; }
+    .s-raw ul { padding-left: 18px; margin: 4px 0; }
+    .s-raw li { font-size: 11.5px; margin-bottom: 2px; }
+    .s-raw .r-link { color: #0000EE; text-decoration: underline; }
+
+    /* ─── STATE: STYLED ──────────────────────────────────── */
+    .s-styled {
+      position: absolute; inset: 0;
+      background: #0D0D0D;
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      opacity: 0;
+    }
+
+    /* mini sidebar */
+    .ms-sidebar {
+      background: #0D0D0D;
+      border-right: 1px solid #1F1F1F;
+      padding: 14px 8px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 20px;
+    }
+    .ms-logo-mark {
+      width: 18px; height: 18px;
+      background: #BFF549;
+    }
+    .ms-nav { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .ms-nav-item {
+      display: flex; align-items: center; gap: 5px;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 8px; color: #555; padding: 4px 5px;
+    }
+    .ms-nav-item.act { color: #BFF549; }
+    .ms-nav-dot { width: 3px; height: 3px; background: #2a2a2a; flex-shrink: 0; }
+    .ms-nav-item.act .ms-nav-dot { background: #BFF549; }
+
+    /* mini main */
+    .ms-main {
+      padding: 14px 14px;
+      display: flex; flex-direction: column; gap: 10px;
+      overflow: hidden;
+    }
+    .ms-name {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 18px; font-weight: 700;
+      color: #fff; letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .ms-role {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px; color: #BFF549;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin-top: 3px;
+    }
+    .ms-divider { height: 1px; background: #1F1F1F; }
+    .ms-section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px; color: #444;
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .ms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .ms-card {
+      background: #141414;
+      border: 1px solid #1F1F1F;
+      padding: 9px 10px;
+    }
+    .ms-card-title {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 9px; font-weight: 600;
+      color: #fff; margin-bottom: 3px;
+    }
+    .ms-card-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px; color: #BFF549;
+      text-transform: uppercase;
+    }
+    .ms-card-bar {
+      width: 100%; height: 2px;
+      background: #1F1F1F; margin-top: 8px;
+      position: relative; overflow: hidden;
+    }
+    .ms-card-bar::after {
+      content: '';
+      position: absolute; left: 0; top: 0;
+      height: 100%;
+      background: #BFF549;
+    }
+    .ms-card-bar.b70::after { width: 70%; }
+    .ms-card-bar.b85::after { width: 85%; }
+    .ms-card-bar.b55::after { width: 55%; }
+    .ms-card-bar.b90::after { width: 90%; }
+
+    /* ─── MONITOR FOOTER ─────────────────────────────────── */
+    .monitor-footer {
+      display: flex; justify-content: space-between;
+      margin-top: 10px;
+    }
+    .mf-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; color: var(--g-muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      transition: color .3s;
+    }
+    .mf-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; color: var(--g-primary);
+    }
+
+    /* ─── BOTTOM BAR ─────────────────────────────────────── */
+    .hero-bottom {
+      border-top: 1px solid var(--g-border);
+      padding: 0 48px;
+      height: 48px;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      position: relative; z-index: 20;
+      flex-shrink: 0;
+    }
+
+    .progress-group {
+      display: flex; align-items: center; gap: 14px;
+      flex: 1; max-width: 380px;
+    }
+    .progress-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; color: var(--g-muted);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+    .progress-track {
+      flex: 1; height: 2px;
+      background: var(--g-border);
+      position: relative; overflow: hidden;
+    }
+    .progress-fill {
+      position: absolute; left: 0; top: 0;
+      height: 100%;
+      background: var(--g-primary);
+      width: 0%;
+      box-shadow: 0 0 8px rgba(191,245,73,.6);
+    }
+    .progress-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; color: var(--g-primary);
+      min-width: 32px; text-align: right;
+    }
+
+    .tech-row {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; color: var(--g-border);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .tech-row span { color: var(--g-muted); transition: color .3s; }
+    .tech-row .sep { color: var(--g-border); }
+
+    .scroll-hint {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 3px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; color: var(--g-muted);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      transition: opacity .3s;
+    }
+    .sh-box {
+      width: 14px; height: 20px;
+      border: 1px solid var(--g-border);
+      display: flex; align-items: flex-start;
+      justify-content: center; padding-top: 3px;
+    }
+    .sh-inner {
+      width: 2px; height: 5px;
+      background: var(--g-primary);
+      animation: sh-anim 1.6s ease-in-out infinite;
+    }
+    @keyframes sh-anim { 0%,100%{ transform:translateY(0); opacity:1 } 60%{ transform:translateY(6px); opacity:.2 } }
+
+    /* ─── POST-HERO ──────────────────────────────────────── */
+    .post-hero {
+      height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      border-top: 1px solid var(--g-border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--g-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════════════
+       HERO SCROLL SECTION
+       ════════════════════════════════════════════════════ -->
+  <div class="hero-scroll" id="heroScroll">
+    <div class="hero-sticky" id="heroSticky">
+
+      <!-- Corner accents -->
+      <div class="corner c-tl"></div>
+      <div class="corner c-tr"></div>
+      <div class="corner c-bl"></div>
+      <div class="corner c-br"></div>
+
+      <!-- Top bar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <div class="t-logo">GOR<em>X</em></div>
+          <div class="t-sep"></div>
+          <div class="t-tag">Frontend Developer</div>
+          <div class="t-sep"></div>
+          <div class="t-tag" id="tVersion">v0.00</div>
+        </div>
+        <div class="topbar-right">
+          <div class="t-status">
+            <div class="t-dot"></div>
+            Disponível para projetos
+          </div>
+          <div class="t-sep"></div>
+          <div class="t-tag">2026</div>
+        </div>
+      </div>
+
+      <!-- Main split -->
+      <div class="hero-main">
+
+        <!-- LEFT: Headline -->
+        <div class="hero-left">
+          <div class="eyebrow">Portfólio &nbsp;·&nbsp; 2026</div>
+
+          <h1 class="headline" aria-label="Código que transforma pixels">
+            <span class="ln"><span class="ln-in">Código</span></span>
+            <span class="ln"><span class="ln-in">que</span></span>
+            <span class="ln"><span class="ln-in acc">transforma</span></span>
+            <span class="ln"><span class="ln-in dim">pixels.</span></span>
+          </h1>
+
+          <p class="hero-desc">
+            Interfaces que impressionam. Experiências que convertem.
+            Da arquitetura ao pixel — cada detalhe importa.
+          </p>
+
+          <div class="cta-row">
+            <a href="#contato" class="btn-p">
+              Falar comigo
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#projetos" class="btn-g">Ver projetos</a>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-num">5<em>+</em></div>
+              <div class="stat-label">Anos de xp</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num">30<em>+</em></div>
+              <div class="stat-label">Projetos</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-num">100<em>%</em></div>
+              <div class="stat-label">Commits</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Browser mock -->
+        <div class="hero-right">
+          <div class="monitor-wrap">
+            <div class="monitor-glow" id="mGlow"></div>
+
+            <div class="monitor" id="monitor">
+
+              <!-- Browser chrome -->
+              <div class="b-chrome">
+                <div class="b-dots">
+                  <div class="b-dot" id="d1"></div>
+                  <div class="b-dot" id="d2"></div>
+                  <div class="b-dot" id="d3"></div>
+                </div>
+                <div class="b-url">
+                  <span class="b-lock" id="bLock">
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </span>
+                  <span class="b-url-text" id="bUrl">file:///portfolio/index.html</span>
+                </div>
+              </div>
+
+              <!-- Content area -->
+              <div class="b-content">
+
+                <!-- Scan sweep effect -->
+                <div class="scan-sweep" id="scanSweep"></div>
+
+                <!-- ── STATE 0: RAW ── -->
+                <div class="s-raw" id="sRaw">
+                  <div class="r-nav">
+                    <a href="#">Home</a>
+                    <a href="#">About</a>
+                    <a href="#">Projects</a>
+                    <a href="#">Contact</a>
+                  </div>
+                  <h1>Gabriel Gonzales</h1>
+                  <p style="font-size:11.5px;margin-bottom:8px">Frontend Developer &amp; Fullstack</p>
+                  <h2>Projects</h2>
+                  <div class="r-project">
+                    <strong>E-commerce Platform</strong>
+                    <span class="r-tag">React · Node.js · PostgreSQL</span><br>
+                    <span>Full-stack e-commerce with payment integration and admin panel.</span>
+                  </div>
+                  <div class="r-project">
+                    <strong>SaaS Dashboard</strong>
+                    <span class="r-tag">Next.js · TypeScript · Tailwind</span><br>
+                    <span>Analytics dashboard with real-time data visualization.</span>
+                  </div>
+                  <h2>Skills</h2>
+                  <ul>
+                    <li>React, Next.js, TypeScript</li>
+                    <li>Node.js, PostgreSQL, REST APIs</li>
+                    <li>Figma, CSS, Tailwind CSS</li>
+                  </ul>
+                  <p style="margin-top:8px"><a class="r-link" href="#">dev.gabrielgonzales@gmail.com</a></p>
+                </div>
+
+                <!-- ── STATE 1: STYLED ── -->
+                <div class="s-styled" id="sStyled">
+                  <div class="ms-sidebar">
+                    <div class="ms-logo-mark"></div>
+                    <div class="ms-nav">
+                      <div class="ms-nav-item act"><div class="ms-nav-dot"></div>Work</div>
+                      <div class="ms-nav-item"><div class="ms-nav-dot"></div>About</div>
+                      <div class="ms-nav-item"><div class="ms-nav-dot"></div>Contact</div>
+                    </div>
+                  </div>
+                  <div class="ms-main">
+                    <div>
+                      <div class="ms-name">GABRIEL<br>GONZALES</div>
+                      <div class="ms-role">Frontend · Fullstack · 2026</div>
+                    </div>
+                    <div class="ms-divider"></div>
+                    <div class="ms-section-label">— Selected Work</div>
+                    <div class="ms-grid">
+                      <div class="ms-card">
+                        <div class="ms-card-title">E-Commerce</div>
+                        <div class="ms-card-tag">React · Node</div>
+                        <div class="ms-card-bar b70"></div>
+                      </div>
+                      <div class="ms-card">
+                        <div class="ms-card-title">SaaS Dashboard</div>
+                        <div class="ms-card-tag">Next.js · TS</div>
+                        <div class="ms-card-bar b85"></div>
+                      </div>
+                      <div class="ms-card">
+                        <div class="ms-card-title">Design System</div>
+                        <div class="ms-card-tag">Storybook</div>
+                        <div class="ms-card-bar b55"></div>
+                      </div>
+                      <div class="ms-card">
+                        <div class="ms-card-title">API Platform</div>
+                        <div class="ms-card-tag">Node · PG</div>
+                        <div class="ms-card-bar b90"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div><!-- /b-content -->
+            </div><!-- /monitor -->
+
+            <!-- Monitor footer -->
+            <div class="monitor-footer">
+              <div class="mf-label" id="mLabel">raw.html — no styles applied</div>
+              <div class="mf-pct" id="mPct">0%</div>
+            </div>
+          </div><!-- /monitor-wrap -->
+        </div><!-- /hero-right -->
+
+      </div><!-- /hero-main -->
+
+      <!-- Bottom bar -->
+      <div class="hero-bottom">
+        <div class="progress-group">
+          <div class="progress-label">Transform</div>
+          <div class="progress-track">
+            <div class="progress-fill" id="pFill"></div>
+          </div>
+          <div class="progress-pct" id="pPct">0%</div>
+        </div>
+
+        <div class="tech-row">
+          <span id="t1">React</span><span class="sep">·</span>
+          <span id="t2">Next.js</span><span class="sep">·</span>
+          <span id="t3">TypeScript</span><span class="sep">·</span>
+          <span id="t4">Node.js</span>
+        </div>
+
+        <div class="scroll-hint" id="scrollHint">
+          <div class="sh-box"><div class="sh-inner"></div></div>
+          Scroll
+        </div>
+      </div>
+
+    </div><!-- /hero-sticky -->
+  </div><!-- /hero-scroll -->
+
+  <!-- Post-hero placeholder -->
+  <div class="post-hero">— próxima seção —</div>
+
+
+  <!--
+  ════════════════════════════════════════════════════════
+  INTEGRAÇÃO COM VÍDEO REAL (quando estiver pronto):
+
+  1. Substitua o bloco .b-content pelo código abaixo:
+
+  <div class="b-content" style="background:#000">
+    <video
+      id="heroVideo"
+      src="hero-transform.mp4"
+      preload="auto"
+      muted
+      playsinline
+      style="width:100%;height:100%;object-fit:cover;display:block"
+    ></video>
+  </div>
+
+  2. No JS, descomente a linha:
+     // video.currentTime = p * video.duration;
+
+  3. Remova os elementos #sRaw, #sStyled e #scanSweep.
+  ════════════════════════════════════════════════════════
+  -->
+
+
+  <script>
+    const heroScroll = document.getElementById('heroScroll');
+    const pFill      = document.getElementById('pFill');
+    const pPct       = document.getElementById('pPct');
+    const mPct       = document.getElementById('mPct');
+    const mLabel     = document.getElementById('mLabel');
+    const tVersion   = document.getElementById('tVersion');
+    const sRaw       = document.getElementById('sRaw');
+    const sStyled    = document.getElementById('sStyled');
+    const mGlow      = document.getElementById('mGlow');
+    const scanSweep  = document.getElementById('scanSweep');
+    const scrollHint = document.getElementById('scrollHint');
+    const bUrl       = document.getElementById('bUrl');
+    const bLock      = document.getElementById('bLock');
+    const d1         = document.getElementById('d1');
+    const d2         = document.getElementById('d2');
+    const d3         = document.getElementById('d3');
+
+    // const video = document.getElementById('heroVideo');
+
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+    /* maps p into a sub-range [s,e] → [0,1] */
+    function seg(p, s, e) { return clamp((p - s) / (e - s), 0, 1); }
+
+    /* ease curves */
+    function eio(t) { return t < .5 ? 2*t*t : -1+(4-2*t)*t; }
+    function eo3(t) { return 1 - Math.pow(1 - t, 3); }
+
+    /* ── URL stage labels ── */
+    const urlStages = [
+      { at: 0,   url: 'file:///portfolio/index.html', color: '#444' },
+      { at: 0.3, url: 'localhost:3000',               color: '#777' },
+      { at: 0.65,url: 'gorx.dev',                     color: '#BFF549' },
+    ];
+
+    const labelStages = [
+      { at: 0,   text: 'raw.html — no styles applied',   color: '#555' },
+      { at: 0.25,text: 'applying styles...',              color: '#777' },
+      { at: 0.55,text: 'gorx.css — loading',             color: '#BFF549' },
+      { at: 0.85,text: 'gorx.dev — production',          color: '#BFF549' },
+    ];
+
+    function stageVal(stages, p) {
+      let cur = stages[0];
+      for (const s of stages) { if (p >= s.at) cur = s; }
+      return cur;
+    }
+
+    function update() {
+      const rect   = heroScroll.getBoundingClientRect();
+      const scrolled = -rect.top;
+      const total    = heroScroll.offsetHeight - window.innerHeight;
+      const p        = clamp(scrolled / total, 0, 1);
+
+      /* ── video scrub (uncomment when video is ready) ──
+      if (video && video.duration) {
+        video.currentTime = p * video.duration;
+      }
+      ── */
+
+      /* ── Progress bar ── */
+      const pct = Math.round(p * 100);
+      pFill.style.width = pct + '%';
+      pPct.textContent  = pct + '%';
+      mPct.textContent  = pct + '%';
+      tVersion.textContent = 'v' + p.toFixed(2);
+
+      /* ── Raw state fade out (0 → 0.45) ── */
+      sRaw.style.opacity = 1 - eio(seg(p, 0, 0.45));
+
+      /* ── Styled state fade in (0.2 → 0.72) ── */
+      const stIn = eio(seg(p, 0.2, 0.72));
+      sStyled.style.opacity   = stIn;
+      sStyled.style.transform = `translateY(${(1 - eo3(seg(p, 0.2, 0.6))) * 22}px)`;
+
+      /* ── Scan sweep: runs 0.28 → 0.52 ── */
+      const scanP = seg(p, 0.28, 0.52);
+      if (scanP > 0 && scanP < 1) {
+        scanSweep.style.opacity = Math.sin(scanP * Math.PI) * 0.9;
+        scanSweep.style.top     = (scanP * 100) + '%';
+      } else {
+        scanSweep.style.opacity = 0;
+      }
+
+      /* ── Monitor glow (0.6 → 1.0) ── */
+      mGlow.style.opacity = eio(seg(p, 0.6, 1.0));
+
+      /* ── Browser dots ── */
+      d1.style.background = seg(p, 0.4, 0.7) > .4 ? '#FF5F57' : '#2a2a2a';
+      d2.style.background = seg(p, 0.4, 0.7) > .6 ? '#FEBC2E' : '#2a2a2a';
+      d3.style.background = seg(p, 0.4, 0.7) > .8 ? '#28C840' : '#2a2a2a';
+
+      /* ── URL bar ── */
+      const urlS = stageVal(urlStages, p);
+      bUrl.textContent      = urlS.url;
+      bUrl.style.color      = urlS.color;
+      bLock.style.color     = urlS.color;
+      bLock.style.opacity   = p > 0.65 ? '1' : '0.3';
+
+      /* ── Monitor label ── */
+      const lblS = stageVal(labelStages, p);
+      mLabel.textContent  = lblS.text;
+      mLabel.style.color  = lblS.color;
+
+      /* ── Tech row highlight on complete ── */
+      const techHighlight = p > 0.9 ? '#BFF549' : '#666';
+      ['t1','t2','t3','t4'].forEach(id => {
+        document.getElementById(id).style.color = techHighlight;
+      });
+
+      /* ── Scroll hint fades out quickly ── */
+      scrollHint.style.opacity = 1 - seg(p, 0, 0.08);
+    }
+
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+
+    /* ── Entrance animation for headline lines ── */
+    document.querySelectorAll('.ln-in').forEach((el, i) => {
+      el.style.cssText = `
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity .7s ease ${i * 0.1 + 0.1}s, transform .7s ease ${i * 0.1 + 0.1}s;
+      `;
+    });
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.ln-in').forEach(el => {
+        el.style.opacity   = '1';
+        el.style.transform = 'translateY(0)';
+      });
+    });
+  </script>
+</body>
+</html>
