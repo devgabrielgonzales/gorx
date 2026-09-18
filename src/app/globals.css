@@ -1112,11 +1112,6 @@ h2 {
 .footer .eyebrow {
   font-size: 8px;
 }
-.footer-meta {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-}
 .footer-social {
   display: flex;
   align-items: center;
@@ -1129,11 +1124,6 @@ h2 {
 }
 .footer-social a:hover {
   color: var(--primary);
-}
-.back-top {
-  display: flex;
-  align-items: center;
-  gap: 15px;
 }
 .back-top-float {
   position: fixed;
@@ -1602,12 +1592,9 @@ h2 {
     flex-wrap: wrap;
     padding: 25px 6%;
   }
-  .footer-meta {
+  .footer > p {
     order: 3;
     width: 100%;
-    justify-content: space-between;
-  }
-  .footer-meta p {
     font-size: 7px;
   }
   .footer img {
