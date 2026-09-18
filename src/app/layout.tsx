@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Chakra_Petch, JetBrains_Mono } from "next/font/google";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
+import Preloader from "@/components/Preloader";
 import { SmoothCursor } from "@/components/ui/smooth-cursor";
 import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
@@ -19,7 +20,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gorx — Design com intenção. Código com propósito.",
+  title: "Gorx | Gabriel Gonzales",
   description:
     "Gabriel Gonzales, desenvolvedor frontend & fullstack. Design, desenvolvimento e experiências digitais com atenção a cada detalhe.",
   icons: {
@@ -43,10 +44,14 @@ export default function RootLayout({
       className={`${display.variable} ${mono.variable}`}
       data-overlayscrollbars-initialize
     >
-      <body data-overlayscrollbars-initialize>
+      {/* Extensions write attributes onto body before React hydrates
+          (ColorZilla's cz-shortcut-listen, for one), which React reports as a
+          mismatch. This only suppresses body's own attributes, not children. */}
+      <body data-overlayscrollbars-initialize suppressHydrationWarning>
         <a href="#main-content" className="skip-link">
           Pular para o conteúdo
         </a>
+        <Preloader />
         <SmoothCursor />
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>

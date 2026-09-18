@@ -1,6 +1,7 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { ArrowDown, ArrowUpRight, ArrowUp, Plus } from "lucide-react";
-import Header from "@/components/layout/Header";
+import { Header } from "@/components/header";
 import BackToTop from "@/components/BackToTop";
 import RockHero from "@/components/sections/RockHero";
 import PortfolioMotion from "@/components/PortfolioMotion";
@@ -23,6 +24,17 @@ const orderedProjects = DISPLAY_ORDER.map(
   (id) => projects.find((project) => project.id === id)!,
 );
 
+const STATEMENT_WORDS = [
+  "ESTRATÉGIA",
+  "DESIGN",
+  "CÓDIGO",
+  "EXPERIÊNCIA",
+  "PERFORMANCE",
+  "DETALHE",
+  "IMPACTO",
+  "ENTREGA",
+];
+
 export default function Portfolio() {
   return (
     <>
@@ -31,8 +43,8 @@ export default function Portfolio() {
         <RockHero>
           <div className="hero-copy">
             <p className="eyebrow hero-eyebrow">
-              <span className="availability-dot" /> Independente por escolha.
-              Criativo por natureza.
+              <span className="availability-dot" /> Disponível para novos
+              projetos.
             </p>
             <h1>
               <span className="hero-line">
@@ -72,7 +84,30 @@ export default function Portfolio() {
           <div className="hero-bottom">
             <a href="#projetos" className="scroll-cue">
               <span>Explore no scroll</span>
-              <ArrowDown size={15} />
+              <svg
+                width="15"
+                height="24"
+                viewBox="0 0 15 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <rect
+                  x="1"
+                  y="1"
+                  width="13"
+                  height="22"
+                  rx="6.5"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                />
+                <circle
+                  className="mouse-scroll-dot"
+                  cx="7.5"
+                  cy="7"
+                  r="1.5"
+                  fill="currentColor"
+                />
+              </svg>
             </a>
             <span className="eyebrow hero-edition">Portfolio — 2026</span>
           </div>
@@ -159,13 +194,23 @@ export default function Portfolio() {
             </div>
           </section>
           <div className="statement-strip" aria-hidden="true">
-            <span>ESTRATÉGIA</span>
-            <span>✳</span>
-            <span>DESIGN</span>
-            <span>✳</span>
-            <span>CÓDIGO</span>
-            <span>✳</span>
-            <span>EXPERIÊNCIA</span>
+            <div className="statement-track">
+              {[0, 1].map((copy) => (
+                <div
+                  className="statement-group"
+                  key={copy}
+                  aria-hidden={copy === 1 ? true : undefined}
+                >
+                  {STATEMENT_WORDS.map((word) => (
+                    <span key={word}>{word}</span>
+                  )).reduce<ReactNode[]>((acc, span, i) => {
+                    if (i > 0) acc.push(<span key={`dot-${i}`}>✳</span>);
+                    acc.push(span);
+                    return acc;
+                  }, [] as ReactNode[])}
+                </div>
+              ))}
+            </div>
           </div>
           <section id="sobre" className="section about-section">
             <div className="section-top">

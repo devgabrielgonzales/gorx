@@ -33,10 +33,10 @@ export const projects: Project[] = [
   {
     id: "atende",
     index: "01",
-    name: "Atende",
+    name: "Atende Dental Uni",
     category: "Sistema",
     description:
-      "Sistema de atendimento de emergência odontológica para dentistas e colaboradores.",
+      "Sistema de atendimento de emergência odontológica para dentistas e colaboradores da Dental Uni.",
     url: "#projetos",
     image: "/images/Atende.png",
   },
@@ -87,7 +87,7 @@ export const projects: Project[] = [
     category: "E-commerce",
     description:
       "Catálogo digital de máquinas florestais e de construção com foco em conversão.",
-    url: "https://lavoro-beta.vercel.app",
+    url: "https://lavoroequipamentos.com.br/",
     image: "/images/lavoro.png",
   },
   {
@@ -103,7 +103,7 @@ export const projects: Project[] = [
   {
     id: "prospect",
     index: "08",
-    name: "Prospect",
+    name: "Prospect Dental Uni",
     category: "Sistema",
     description:
       "Portal comercial para vendedores, representantes e colaboradores da Dental Uni.",

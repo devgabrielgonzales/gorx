@@ -172,16 +172,9 @@ main {
   color: var(--primary);
 }
 .header-contact {
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 10px 0;
-  border-bottom: 1px solid #76796e;
-}
-.header-contact:hover {
-  color: var(--primary);
-  border-color: var(--primary);
+  min-height: 40px;
+  padding: 8px 18px;
+  gap: 16px;
 }
 .menu-toggle {
   display: none;
@@ -281,6 +274,23 @@ main {
   padding-bottom: 0.12em;
   margin-bottom: -0.12em;
 }
+.hero-line--vaporizing,
+.rock-hero.is-vaporizing .hero-line,
+.rock-hero.is-vaporizing .reveal-line {
+  /* Let the char scatter escape the entrance mask while it dissolves. */
+  overflow: visible !important;
+  position: relative;
+  z-index: 2;
+}
+.rock-hero.is-vaporizing h1,
+.rock-hero.is-vaporizing .hero-intro > p,
+.rock-hero.is-vaporizing .hero-actions {
+  pointer-events: none;
+}
+.vapor-char {
+  display: inline-block;
+  will-change: transform, filter, opacity;
+}
 .hero-lead {
   display: block;
 }
@@ -325,7 +335,7 @@ main {
   gap: 34px;
   min-height: 48px;
   padding: 13px 22px;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
   transition:
     background 0.25s,
@@ -333,11 +343,22 @@ main {
 }
 .button-primary {
   background: var(--primary);
-  color: #0d0d0d;
+  border: 1px solid var(--primary);
+  color: #ffffff;
 }
 .button-primary:hover {
-  background: #d1ff7b;
+  background: #8fb837;
+  border-color: #8fb837;
+  color: #ffffff;
   transform: translateY(-2px);
+}
+.button-primary svg,
+.text-link svg {
+  transition: transform 0.25s;
+}
+.button-primary:hover svg,
+.text-link:hover svg {
+  transform: translate(3px, -3px);
 }
 /* Same brand button, sized to sit inside the 64px nav bar. */
 .nav-cta {
@@ -349,18 +370,23 @@ main {
 .text-link {
   display: inline-flex;
   align-items: center;
-  gap: 18px;
-  font-size: 12px;
-  padding-block: 10px;
-}
-.text-link svg {
-  transition: transform 0.25s;
+  justify-content: center;
+  gap: 34px;
+  min-height: 48px;
+  padding: 13px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1px solid var(--primary);
+  background: transparent;
+  color: inherit;
+  transition:
+    background 0.25s,
+    border-color 0.25s,
+    transform 0.25s;
 }
 .text-link:hover {
-  color: var(--primary);
-}
-.text-link:hover svg {
-  transform: translate(3px, -3px);
+  border-color: #d1ff7b;
+  transform: translateY(-2px);
 }
 .hero-bottom {
   position: absolute;
@@ -394,6 +420,28 @@ main {
 }
 .scroll-cue svg {
   color: var(--primary);
+}
+.mouse-scroll-dot {
+  animation: mouse-scroll-wheel 1.6s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes mouse-scroll-wheel {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  60% {
+    transform: translateY(7px);
+    opacity: 0;
+  }
+  61% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 .hero-side-label {
   position: absolute;
@@ -540,17 +588,42 @@ h2 {
 .statement-strip {
   background: var(--primary);
   color: #0d0d0d;
-  padding: 22px 4%;
+  padding: 22px 0;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+}
+.statement-track {
   display: flex;
-  justify-content: space-around;
+  width: max-content;
+  animation: statement-scroll 34s linear infinite;
+}
+.statement-strip:hover .statement-track,
+.statement-strip:focus-within .statement-track {
+  animation-play-state: paused;
+}
+@keyframes statement-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.statement-group {
+  display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 25px;
+  padding-right: 25px;
   font-size: clamp(14px, 2vw, 30px);
   font-weight: 550;
   letter-spacing: -0.04em;
-  overflow: hidden;
+  white-space: nowrap;
 }
-.statement-strip span:nth-child(even) {
+.statement-group span:nth-child(even) {
   font-size: 32px;
   font-weight: 400;
 }
@@ -603,7 +676,6 @@ h2 {
 }
 .about-copy .text-link {
   margin-top: 10px;
-  border-bottom: 1px solid #52564a;
 }
 .stats-row {
   display: grid;
@@ -1124,6 +1196,8 @@ h2 {
   }
   .button {
     font-size: 11px;
+  }
+  .text-link {
     padding-inline: 17px;
     gap: 20px;
   }
@@ -1226,13 +1300,13 @@ h2 {
     font-size: 8px;
   }
   .statement-strip {
-    justify-content: flex-start;
-    white-space: nowrap;
+    padding: 16px 0;
+  }
+  .statement-group {
     font-size: 19px;
     gap: 25px;
-    padding: 16px 6%;
   }
-  .statement-strip span:nth-child(even) {
+  .statement-group span:nth-child(even) {
     font-size: 25px;
   }
   .about-grid {
@@ -1342,11 +1416,13 @@ h2 {
   font-variant-numeric: tabular-nums;
 }
 @media (prefers-reduced-motion: reduce) {
-  .marquee-container {
+  .marquee-container,
+  .statement-strip {
     overflow-x: auto;
     mask-image: none;
   }
   .marquee-group[aria-hidden="true"],
+  .statement-group[aria-hidden="true"],
   .stack-pause {
     display: none;
   }
@@ -1357,4 +1433,110 @@ h2 {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ---------- Preloader ---------- */
+html.is-preloading,
+html.is-preloading body {
+  overflow: hidden !important;
+}
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+.preloader__panels {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+.preloader__panel {
+  flex: 1 1 0;
+  background: var(--primary);
+  will-change: transform;
+}
+.preloader__panel + .preloader__panel {
+  margin-left: -1px;
+}
+.preloader::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 180px rgba(13, 13, 13, 0.16);
+}
+.preloader__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(28px, 5vw, 44px);
+  color: #0d0d0d;
+}
+/* The overlay paints before its timeline exists, so the start state belongs
+   here: the first frame is nothing but the background colour. */
+.preloader__mark {
+  width: clamp(88px, 13vw, 150px);
+  height: auto;
+  overflow: visible;
+  opacity: 0;
+  filter: drop-shadow(0 18px 40px rgba(13, 13, 13, 0.18));
+}
+.preloader__meter {
+  width: clamp(200px, 26vw, 340px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  opacity: 0;
+}
+.preloader__bar {
+  height: 2px;
+  background: rgba(13, 13, 13, 0.18);
+  overflow: hidden;
+}
+.preloader__bar span {
+  display: block;
+  height: 100%;
+  background: #0d0d0d;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.preloader__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: rgba(13, 13, 13, 0.7);
+}
+.preloader__count {
+  color: #0d0d0d;
+  font-variant-numeric: tabular-nums;
+}
+.preloader__edge {
+  position: absolute;
+  z-index: 1;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: rgba(13, 13, 13, 0.62);
+  opacity: 0;
+}
+.preloader__edge--tl {
+  top: clamp(20px, 4vw, 40px);
+  left: clamp(20px, 4vw, 40px);
+}
+.preloader__edge--br {
+  right: clamp(20px, 4vw, 40px);
+  bottom: clamp(20px, 4vw, 40px);
+}
+/* The headline holds its own start state (GSAP `from`), but the intro reveal
+   is only built when the overlay leaves — until then, hide it by hand. */
+html.is-preloading .hero-intro > p {
+  visibility: hidden;
 }

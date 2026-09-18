@@ -10,6 +10,8 @@ export const REVEAL_EASE = "power3.out";
  */
 export type Reveal = {
   finish: () => void;
+  rewind: () => void;
+  restart: () => void;
   destroy: () => void;
 };
 
@@ -58,6 +60,11 @@ export function revealLines(
       // Jump to the end without killing the trigger, so it can replay later.
       animation?.progress(1);
     },
+    rewind: () => animation?.pause(0),
+    restart: () => {
+      animation?.pause(0);
+      animation?.play();
+    },
     destroy: () => {
       animation?.scrollTrigger?.kill();
       animation?.kill();
@@ -90,6 +97,8 @@ export function revealBlock(
   });
   return {
     finish: () => animation.progress(1),
+    rewind: () => animation.pause(0),
+    restart: () => animation.restart(),
     destroy: () => {
       animation.scrollTrigger?.kill();
       animation.revert();
@@ -146,6 +155,8 @@ export function countUp(
   if (!trigger) animation.play();
   return {
     finish: () => animation.progress(1),
+    rewind,
+    restart: () => animation.restart(true),
     destroy: () => {
       trigger?.kill();
       animation.kill();
