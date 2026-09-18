@@ -1,82 +1,113 @@
 "use client";
-
-import { useState } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
+import { gsap } from "@/lib/gsap";
 
 const links = [
-  { label: "Sobre", href: "#sobre" },
-  { label: "Habilidades", href: "#servicos" },
   { label: "Projetos", href: "#projetos" },
+  { label: "Sobre", href: "#sobre" },
+  { label: "Habilidades", href: "#habilidades" },
   { label: "Processo", href: "#processo" },
   { label: "Contato", href: "#contato" },
 ];
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-
+  const toggle = useRef<HTMLButtonElement>(null);
+  const header = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        toggle.current?.focus();
+      }
+    };
+    const outside = (event: PointerEvent) => {
+      if (!header.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const desktop = window.matchMedia("(min-width: 901px)");
+    const resize = () => {
+      if (desktop.matches) setOpen(false);
+    };
+    document.addEventListener("keydown", close);
+    document.addEventListener("pointerdown", outside);
+    desktop.addEventListener("change", resize);
+    return () => {
+      document.removeEventListener("keydown", close);
+      document.removeEventListener("pointerdown", outside);
+      desktop.removeEventListener("change", resize);
+    };
+  }, []);
+  useEffect(() => {
+    const media = gsap.matchMedia();
+    media.add("(prefers-reduced-motion: no-preference)", () => {
+      const context = gsap.context(() => {
+        gsap.from(".header-inner > *", {
+          y: -14,
+          autoAlpha: 0,
+          duration: 0.7,
+          delay: 0.15,
+          stagger: 0.09,
+          ease: "power3.out",
+        });
+      }, header);
+      return () => context.revert();
+    });
+    return () => media.revert();
+  }, []);
   return (
-    <header
-      id="header"
-      className="sticky top-0 z-50 backdrop-blur-sm border-b border-[#1f1f1f]"
-      style={{ background: "rgba(13,13,13,0.9)" }}
-    >
-      <div className="max-w-container mx-auto border-x border-[#1f1f1f] px-6 flex items-center justify-between h-16">
-        <a href="#" className="flex items-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/svg/logo.svg" alt="Gorx" className="h-8 w-auto" />
+    <header className="site-header" ref={header}>
+      <div className="header-inner">
+        <a
+          href="#hero"
+          onClick={() => setOpen(false)}
+          aria-label="Gorx — início"
+        >
+          <Image
+            src="/svg/logo.svg"
+            alt="Gorx"
+            width={108}
+            height={30}
+            preload
+          />
         </a>
-        <nav className="hidden md:flex items-center gap-8">
-          {links.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="text-sm text-[#666] hover:text-white transition-colors"
-            >
-              {l.label}
+        <nav className="desktop-nav" aria-label="Navegação principal">
+          {links.map((link) => (
+            <a href={link.href} key={link.href}>
+              {link.label}
             </a>
           ))}
         </nav>
-        <a
-          href="#contato"
-          className="hidden md:inline-flex items-center gap-2 bg-[#bff549] text-[#0d0d0d] px-5 py-2 text-sm font-bold hover:bg-white transition-colors"
-        >
-          Falar comigo
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
+        <a href="mailto:contato@gorx.com.br" className="header-contact">
+          Vamos conversar <ArrowUpRight size={17} />
         </a>
         <button
+          ref={toggle}
+          className="menu-toggle"
+          type="button"
+          aria-label={open ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={open}
+          aria-controls="mobile-navigation"
           onClick={() => setOpen(!open)}
-          className="md:hidden text-[#666] hover:text-white"
-          aria-label="Menu"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          {open ? <X /> : <Menu />}
         </button>
       </div>
-      {open && (
-        <div className="md:hidden border-t border-[#1f1f1f] bg-[#0d0d0d]">
-          <div className="max-w-container mx-auto border-x border-[#1f1f1f] px-6 py-4 flex flex-col gap-4">
-            {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="text-sm text-[#666] hover:text-white transition-colors"
-              >
-                {l.label}
-              </a>
-            ))}
-            <a
-              href="#contato"
-              onClick={() => setOpen(false)}
-              className="bg-[#bff549] text-[#0d0d0d] px-5 py-2 text-sm font-bold text-center hover:bg-white transition-colors"
-            >
-              Falar comigo
-            </a>
-          </div>
-        </div>
-      )}
+      <nav
+        id="mobile-navigation"
+        className="mobile-nav"
+        aria-label="Navegação mobile"
+        hidden={!open}
+      >
+        {links.map((link, i) => (
+          <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
+            <span className="eyebrow lime">0{i + 1}</span>
+            {link.label}
+            <ArrowUpRight size={20} />
+          </a>
+        ))}
+      </nav>
     </header>
   );
 }

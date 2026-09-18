@@ -31,14 +31,14 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    id: "lavoro",
+    id: "atende",
     index: "01",
-    name: "Lavoro Equipamentos",
-    category: "E-commerce",
+    name: "Atende",
+    category: "Sistema",
     description:
-      "Catálogo digital de máquinas florestais com foco em performance e conversão.",
-    url: "https://lavoro-beta.vercel.app",
-    image: "/images/706shots_so.png",
+      "Sistema de atendimento de emergência odontológica para dentistas e colaboradores.",
+    url: "#projetos",
+    image: "/images/Atende.png",
   },
   {
     id: "dens",
@@ -48,53 +48,83 @@ export const projects: Project[] = [
     description:
       "Landing page para clínica odontológica com foco em agendamento e conversão.",
     url: "https://www.dens.com.br",
-    image: "/images/560shots_so.png",
-  },
-  {
-    id: "ideal",
-    index: "03",
-    name: "Ideal Seguros",
-    category: "Landing Page",
-    description:
-      "Plataforma de cotação de seguros com as melhores condições do mercado.",
-    url: "https://idealinsurance.com.br",
-    image: "/images/747shots_so.png",
-  },
-  {
-    id: "brasil-legends",
-    index: "04",
-    name: "Brasil Legends Motorsport",
-    category: "Plataforma",
-    description:
-      "Plataforma de simulação de corridas com ranking e comunidade para pilotos de ACC.",
-    url: "https://www.brasillegendsmotorsport.com.br",
-    image: "/images/193shots_so.png",
+    image: "/images/dens.png",
   },
   {
     id: "fortnari",
-    index: "05",
+    index: "03",
     name: "Fortnari Contabilidade",
     category: "Landing Page",
     description:
       "Site institucional para escritório contábil com foco em captação de clientes.",
     url: "https://fortnari.com.br",
-    image: "/images/462shots_so.png",
+    image: "/images/fort.png",
   },
   {
-    id: "oiana",
+    id: "ideal",
+    index: "04",
+    name: "Ideal Seguros",
+    category: "Landing Page",
+    description:
+      "Plataforma de cotação de seguros com as melhores condições do mercado.",
+    url: "https://idealinsurance.com.br",
+    image: "/images/ideal.png",
+  },
+  {
+    id: "integrador",
+    index: "05",
+    name: "Integrador Dental Uni",
+    category: "Sistema",
+    description:
+      "Hub que conecta sistemas e automatiza a comunicação entre plataformas da Dental Uni.",
+    url: "#projetos",
+    image: "/images/integrador.png",
+  },
+  {
+    id: "lavoro",
     index: "06",
-    name: "OiAna",
+    name: "Lavoro Equipamentos",
+    category: "E-commerce",
+    description:
+      "Catálogo digital de máquinas florestais e de construção com foco em conversão.",
+    url: "https://lavoro-beta.vercel.app",
+    image: "/images/lavoro.png",
+  },
+  {
+    id: "mailer",
+    index: "07",
+    name: "Mailer Dental Uni",
+    category: "Sistema",
+    description:
+      "Plataforma para gerenciamento de envios de e-mails e SMS da Dental Uni.",
+    url: "#projetos",
+    image: "/images/mailer.png",
+  },
+  {
+    id: "prospect",
+    index: "08",
+    name: "Prospect",
+    category: "Sistema",
+    description:
+      "Portal comercial para vendedores, representantes e colaboradores da Dental Uni.",
+    url: "#projetos",
+    image: "/images/prospect.png",
+  },
+  {
+    id: "younus",
+    index: "09",
+    name: "Younus",
     category: "Landing Page",
     description:
       "Plataforma de agendamentos direto da Dental Uni para beneficiários.",
     url: "https://oiana-lp.vercel.app",
-    image: "/images/689shots_so.png",
+    image: "/images/younus.png",
   },
 ];
 
 export const stats = [
   { value: "+30", label: "Projetos entregues" },
-  { value: "3+", label: "Anos programando" },
+  { value: "5+", label: "Anos programando" },
   { value: "12+", label: "Tecnologias no stack" },
 ];
 

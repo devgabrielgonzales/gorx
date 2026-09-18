@@ -1,60 +1,79 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
+import { Pause, Play } from "lucide-react";
+
 const stack = [
-  { name: "HTML5", icon: "https://cdn.simpleicons.org/html5/ffffff" },
-  { name: "CSS3", icon: "https://cdn.simpleicons.org/css/ffffff" },
-  { name: "JavaScript", icon: "https://cdn.simpleicons.org/javascript/ffffff" },
-  { name: "TypeScript", icon: "https://cdn.simpleicons.org/typescript/ffffff" },
-  { name: "React", icon: "https://cdn.simpleicons.org/react/ffffff" },
-  { name: "Next.js", icon: "https://cdn.simpleicons.org/nextdotjs/ffffff" },
-  { name: "Tailwind", icon: "https://cdn.simpleicons.org/tailwindcss/ffffff" },
-  { name: "Node.js", icon: "https://cdn.simpleicons.org/nodedotjs/ffffff" },
-  { name: "PostgreSQL", icon: "https://cdn.simpleicons.org/postgresql/ffffff" },
-  { name: "Git", icon: "https://cdn.simpleicons.org/git/ffffff" },
-  { name: "Figma", icon: "https://cdn.simpleicons.org/figma/ffffff" },
-  { name: "Docker", icon: "https://cdn.simpleicons.org/docker/ffffff" },
-  { name: "Vercel", icon: "https://cdn.simpleicons.org/vercel/ffffff" },
-  { name: "Cursor", icon: null as string | null },
-  { name: "Claude", icon: "https://cdn.simpleicons.org/anthropic/ffffff" },
-  { name: "Codex", icon: "https://cdn.simpleicons.org/openai/ffffff" },
+  { name: "HTML5", icon: "/svg/stack/html5.svg" },
+  { name: "CSS3", icon: "/svg/stack/css3.svg" },
+  { name: "JavaScript", icon: "/svg/stack/javascript.svg" },
+  { name: "TypeScript", icon: "/svg/stack/typescript.svg" },
+  { name: "React", icon: "/svg/stack/react.svg" },
+  { name: "Next.js", icon: "/svg/stack/nextjs.svg" },
+  { name: "Tailwind", icon: "/svg/stack/tailwind.svg" },
+  { name: "Node.js", icon: "/svg/stack/nodejs.svg" },
+  { name: "PostgreSQL", icon: "/svg/stack/postgresql.svg" },
+  { name: "Git", icon: "/svg/stack/git.svg" },
+  { name: "Figma", icon: "/svg/stack/figma.svg" },
+  { name: "Docker", icon: "/svg/stack/docker.svg" },
+  { name: "Vercel", icon: "/svg/stack/vercel.svg" },
+  { name: "Cursor", icon: "/svg/stack/cursor.svg" },
+  { name: "Claude", icon: "/svg/stack/claude.svg" },
+  { name: "Codex", icon: "/svg/stack/codex.svg" },
 ];
 
-const items = [...stack, ...stack];
-
 export default function StackMarquee() {
+  const [paused, setPaused] = useState(false);
   return (
-    <section id="stack">
-      <div className="max-w-container mx-auto border-x border-t border-[#1f1f1f]">
-        <div className="px-6 py-4 border-b border-[#1f1f1f]">
-          <p className="text-xs font-mono text-[#666] uppercase tracking-widest">Stack & Tecnologias</p>
-        </div>
-        <div className="marquee-container overflow-hidden py-8">
-          <div className="marquee-track">
-            {items.map((t, i) => (
-              <div
-                key={`${t.name}-${i}`}
-                className="flex flex-col items-center gap-2 px-10 flex-shrink-0 group cursor-default"
-              >
-                {t.icon ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={t.icon}
-                    alt={t.name}
-                    className="w-10 h-10 opacity-70 group-hover:opacity-100 transition-opacity"
+    <section
+      id="stack"
+      className="stack-carousel"
+      aria-labelledby="stack-title"
+    >
+      <div className="stack-carousel-heading">
+        <h2 id="stack-title" className="eyebrow">
+          Stack & Tecnologias
+        </h2>
+        <button
+          type="button"
+          className="stack-pause"
+          onClick={() => setPaused(!paused)}
+          aria-label={
+            paused
+              ? "Reproduzir carrossel de tecnologias"
+              : "Pausar carrossel de tecnologias"
+          }
+          aria-pressed={paused}
+        >
+          {paused ? <Play size={14} /> : <Pause size={14} />}
+        </button>
+      </div>
+      <div className="marquee-container">
+        <div className="marquee-track" data-paused={paused}>
+          {[0, 1].map((copy) => (
+            <ul
+              className="marquee-group"
+              key={copy}
+              aria-hidden={copy === 1 ? true : undefined}
+            >
+              {stack.map((technology) => (
+                <li className="stack-item" key={technology.name}>
+                  <Image
+                    src={technology.icon}
+                    alt=""
+                    width={36}
+                    height={36}
+                    unoptimized
+                    // The marquee scrolls every item into view, so lazy
+                    // loading would drag blank gaps across the track.
+                    loading="eager"
                   />
-                ) : (
-                  <div className="w-10 h-10 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="white">
-                      <path d="M7 3L7 24L12.5 18.5L16.5 28L20 26.5L16 17L23.5 17Z" />
-                    </svg>
-                  </div>
-                )}
-                <span className="text-xs font-mono text-[#666] group-hover:text-white transition-colors">
-                  {t.name}
-                </span>
-              </div>
-            ))}
-          </div>
+                  <span>{technology.name}</span>
+                </li>
+              ))}
+            </ul>
+          ))}
         </div>
       </div>
     </section>
