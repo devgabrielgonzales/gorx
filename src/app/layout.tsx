@@ -3,6 +3,7 @@ import { Chakra_Petch, JetBrains_Mono } from "next/font/google";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import Preloader from "@/components/Preloader";
 import { SmoothCursor } from "@/components/ui/smooth-cursor";
+import { getSiteUrl, siteDescription, siteTitle } from "@/lib/site";
 import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
 
@@ -20,9 +21,28 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gorx | Gabriel Gonzales",
-  description:
-    "Gabriel Gonzales, desenvolvedor frontend & fullstack. Design, desenvolvimento e experiências digitais com atenção a cada detalhe.",
+  metadataBase: new URL(getSiteUrl()),
+  title: siteTitle,
+  description: siteDescription,
+  applicationName: "Gorx",
+  authors: [{ name: "Gabriel Gonzales" }],
+  creator: "Gabriel Gonzales",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: "/",
+    siteName: "Gorx",
+    title: siteTitle,
+    description: siteDescription,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+  },
   icons: {
     icon: [
       { url: "/favicon/favicon.svg", type: "image/svg+xml" },
