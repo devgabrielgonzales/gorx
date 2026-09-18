@@ -18,6 +18,12 @@ export default function Preloader() {
 
   useGSAP(
     () => {
+      if (document.querySelector("[data-error-screen]")) {
+        releasePreloader();
+        setDone(true);
+        return;
+      }
+
       const html = document.documentElement;
       html.classList.add("is-preloading");
 

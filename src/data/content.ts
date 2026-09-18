@@ -10,9 +10,9 @@ export const brand = {
 };
 
 export const navItems = [
+  { label: "Projetos", href: "#projetos" },
   { label: "Sobre", href: "#sobre" },
   { label: "Habilidades", href: "#habilidades" },
-  { label: "Projetos", href: "#projetos" },
   { label: "Processo", href: "#processo" },
   { label: "Contato", href: "#contato" },
 ];

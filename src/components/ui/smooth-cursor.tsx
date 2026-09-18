@@ -250,6 +250,7 @@ export function SmoothCursor({
   return (
     <>
       <motion.div
+        className="smooth-cursor-layer"
         style={{
           position: "fixed",
           left: cursorX,
@@ -271,6 +272,7 @@ export function SmoothCursor({
         transition={{ duration: 0.15 }}
       />
       <motion.div
+        className="smooth-cursor-layer"
         style={{
           position: "fixed",
           left: cursorX,
