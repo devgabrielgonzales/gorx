@@ -239,8 +239,12 @@ export const flow = {
 };
 
 export const social = [
-  { label: "LinkedIn", href: "#" },
-  { label: "Instagram", href: "#" },
-  { label: "Twitter / X", href: "#" },
-  { label: "GitHub", href: "#" },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/gabriel-gonzales-838177328/",
+  },
+  {
+    label: "GitHub",
+    href: "https://github.com/devgabrielgonzales",
+  },
 ];

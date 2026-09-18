@@ -1,13 +1,18 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
-import { ArrowDown, ArrowUpRight, ArrowUp, Plus } from "lucide-react";
+import { ArrowDown, ArrowUpRight, ArrowUp, Plus, Github, Linkedin } from "lucide-react";
 import { Header } from "@/components/header";
 import BackToTop from "@/components/BackToTop";
 import RockHero from "@/components/sections/RockHero";
 import PortfolioMotion from "@/components/PortfolioMotion";
 import StackMarquee from "@/components/sections/StackMarquee";
 import HowItWorks from "@/components/sections/HowItWorks";
-import { brand, projects, stats, skills, processSteps } from "@/data/content";
+import { brand, projects, stats, skills, processSteps, social } from "@/data/content";
+
+const socialIcons = {
+  LinkedIn: Linkedin,
+  GitHub: Github,
+} as const;
 
 const DISPLAY_ORDER = [
   "lavoro",
@@ -356,7 +361,25 @@ export default function Portfolio() {
             <a href="#hero" aria-label="Gorx — voltar ao início">
               <Image src="/svg/logo.svg" alt="Gorx" width={110} height={31} />
             </a>
-            <p className="eyebrow muted">© 2026 Gorx. Feito com intenção.</p>
+            <div className="footer-meta">
+              <nav className="footer-social" aria-label="Redes sociais">
+                {social.map((item) => {
+                  const Icon = socialIcons[item.label as keyof typeof socialIcons];
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={item.label}
+                    >
+                      <Icon size={16} strokeWidth={1.6} />
+                    </a>
+                  );
+                })}
+              </nav>
+              <p className="eyebrow muted">© 2026 Gorx. Feito com intenção.</p>
+            </div>
             <a className="back-top eyebrow" href="#hero">
               Voltar ao topo <ArrowUp size={16} />
             </a>
