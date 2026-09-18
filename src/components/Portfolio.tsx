@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ArrowDown, ArrowUpRight, ArrowUp, Plus } from "lucide-react";
 import Header from "@/components/layout/Header";
+import BackToTop from "@/components/BackToTop";
 import RockHero from "@/components/sections/RockHero";
 import PortfolioMotion from "@/components/PortfolioMotion";
 import StackMarquee from "@/components/sections/StackMarquee";
@@ -10,10 +11,10 @@ import { brand, projects, stats, skills, processSteps } from "@/data/content";
 const DISPLAY_ORDER = [
   "lavoro",
   "ideal",
-  "atende",
   "dens",
-  "integrador",
   "fortnari",
+  "atende",
+  "integrador",
   "mailer",
   "prospect",
   "younus",
@@ -69,10 +70,6 @@ export default function Portfolio() {
             </div>
           </div>
           <div className="hero-bottom">
-            <span className="eyebrow">
-              São Paulo, Brasil <span className="muted">/</span> Disponível para
-              projetos
-            </span>
             <a href="#projetos" className="scroll-cue">
               <span>Explore no scroll</span>
               <ArrowDown size={15} />
@@ -321,6 +318,7 @@ export default function Portfolio() {
           </footer>
         </PortfolioMotion>
       </main>
+      <BackToTop />
     </>
   );
 }

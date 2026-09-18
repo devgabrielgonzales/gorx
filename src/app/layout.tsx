@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Chakra_Petch, JetBrains_Mono } from "next/font/google";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import { SmoothCursor } from "@/components/ui/smooth-cursor";
+import "overlayscrollbars/overlayscrollbars.css";
 import "./globals.css";
 
 const display = Chakra_Petch({
@@ -37,8 +38,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={`${display.variable} ${mono.variable}`}>
-      <body>
+    <html
+      lang="pt-BR"
+      className={`${display.variable} ${mono.variable}`}
+      data-overlayscrollbars-initialize
+    >
+      <body data-overlayscrollbars-initialize>
         <a href="#main-content" className="skip-link">
           Pular para o conteúdo
         </a>

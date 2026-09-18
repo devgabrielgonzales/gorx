@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import Lenis from "lenis";
+import { OverlayScrollbars } from "overlayscrollbars";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 export default function SmoothScrollProvider({
@@ -8,6 +9,13 @@ export default function SmoothScrollProvider({
 }: {
   children: React.ReactNode;
 }) {
+  useEffect(() => {
+    const osInstance = OverlayScrollbars(document.body, {
+      scrollbars: { theme: "os-theme-primary", clickScroll: true },
+    });
+    return () => osInstance.destroy();
+  }, []);
+
   useEffect(() => {
     const media = gsap.matchMedia();
     media.add(
