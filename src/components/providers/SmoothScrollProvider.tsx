@@ -10,6 +10,13 @@ export default function SmoothScrollProvider({
   children: React.ReactNode;
 }) {
   useEffect(() => {
+    if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const osInstance = OverlayScrollbars(document.body, {
       scrollbars: { theme: "os-theme-primary", clickScroll: true },
     });
