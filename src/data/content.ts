@@ -117,7 +117,7 @@ export const projects: Project[] = [
     category: "Landing Page",
     description:
       "Plataforma de agendamentos direto da Dental Uni para beneficiários.",
-    url: "https://oiana-lp.vercel.app",
+    url: "https://dentaluni.oiana.com.br/",
     image: "/images/younus.webp",
   },
 ];
