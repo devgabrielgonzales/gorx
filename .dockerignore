@@ -1,0 +1,12 @@
+.git
+.github
+.claude
+.next
+node_modules
+legacy
+docs
+*.md
+.env*
+!.env.production
+docker-compose*.yml
+deploy
