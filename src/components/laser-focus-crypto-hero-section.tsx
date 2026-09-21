@@ -693,7 +693,7 @@ export function LaserHero() {
 
       <div className="relative z-10 px-6 md:px-12 pb-8">
         <div className="w-full border border-[#1f1f1f] overflow-hidden bg-[#0d0d0d]/90 backdrop-blur-xl">
-          <img src="/images/dashboard-mockup.png" alt="Gorx dashboard mockup" className="w-full h-auto block" />
+          <img src="/images/dashboard-mockup.webp" alt="Gorx dashboard mockup" className="w-full h-auto block" />
         </div>
       </div>
 

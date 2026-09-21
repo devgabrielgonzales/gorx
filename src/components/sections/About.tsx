@@ -95,7 +95,7 @@ export default function About() {
           <div className="bg-[#141414] min-h-[380px] md:min-h-[480px] relative overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/about-photo.png"
+              src="/images/about-photo.webp"
               alt="Retrato de Gorx"
               className="absolute inset-0 w-full h-full object-cover object-center"
             />

@@ -38,7 +38,7 @@ export const projects: Project[] = [
     description:
       "Sistema de atendimento de emergência odontológica para dentistas e colaboradores da Dental Uni.",
     url: "#projetos",
-    image: "/images/Atende.png",
+    image: "/images/Atende.webp",
   },
   {
     id: "dens",
@@ -48,7 +48,7 @@ export const projects: Project[] = [
     description:
       "Landing page para clínica odontológica com foco em agendamento e conversão.",
     url: "https://www.dens.com.br",
-    image: "/images/dens.png",
+    image: "/images/dens.webp",
   },
   {
     id: "fortnari",
@@ -58,7 +58,7 @@ export const projects: Project[] = [
     description:
       "Site institucional para escritório contábil com foco em captação de clientes.",
     url: "https://fortnari.com.br",
-    image: "/images/fort.png",
+    image: "/images/fort.webp",
   },
   {
     id: "ideal",
@@ -68,7 +68,7 @@ export const projects: Project[] = [
     description:
       "Plataforma de cotação de seguros com as melhores condições do mercado.",
     url: "https://idealinsurance.com.br",
-    image: "/images/ideal.png",
+    image: "/images/ideal.webp",
   },
   {
     id: "integrador",
@@ -78,7 +78,7 @@ export const projects: Project[] = [
     description:
       "Hub que conecta sistemas e automatiza a comunicação entre plataformas da Dental Uni.",
     url: "#projetos",
-    image: "/images/integrador.png",
+    image: "/images/integrador.webp",
   },
   {
     id: "lavoro",
@@ -88,7 +88,7 @@ export const projects: Project[] = [
     description:
       "Catálogo digital de máquinas florestais e de construção com foco em conversão.",
     url: "https://lavoroequipamentos.com.br/",
-    image: "/images/lavoro.png",
+    image: "/images/lavoro.webp",
   },
   {
     id: "mailer",
@@ -98,7 +98,7 @@ export const projects: Project[] = [
     description:
       "Plataforma para gerenciamento de envios de e-mails e SMS da Dental Uni.",
     url: "#projetos",
-    image: "/images/mailer.png",
+    image: "/images/mailer.webp",
   },
   {
     id: "prospect",
@@ -108,7 +108,7 @@ export const projects: Project[] = [
     description:
       "Portal comercial para vendedores, representantes e colaboradores da Dental Uni.",
     url: "#projetos",
-    image: "/images/prospect.png",
+    image: "/images/prospect.webp",
   },
   {
     id: "younus",
@@ -118,7 +118,7 @@ export const projects: Project[] = [
     description:
       "Plataforma de agendamentos direto da Dental Uni para beneficiários.",
     url: "https://oiana-lp.vercel.app",
-    image: "/images/younus.png",
+    image: "/images/younus.webp",
   },
 ];
 

@@ -235,7 +235,7 @@ export default function Portfolio() {
             <div className="about-grid">
               <div className="about-portrait" data-reveal>
                 <Image
-                  src="/images/about-photo.png"
+                  src="/images/about-photo.webp"
                   alt="Gabriel Gonzales, desenvolvedor da Gorx"
                   fill
                   sizes="(max-width: 700px) 90vw, 36vw"
