@@ -1,28 +1,56 @@
 "use client";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
-import { ScrollTrigger } from "@/lib/gsap";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Project } from "@/data/content";
 import { GorxGlyph } from "./marks";
 
+const pad = (value: number) => String(value).padStart(2, "0");
+
+/** Distance between the left edges of two neighbouring cards. */
+const cardStep = (row: HTMLElement | null) => {
+  const cards = row?.querySelectorAll<HTMLElement>(".gx-p-card");
+  if (!cards || cards.length < 2) return 0;
+  return cards[1].offsetLeft - cards[0].offsetLeft;
+};
+
 /**
- * One list, two presentations: a pinned sideways gallery on wide screens and a
- * stack of rows on narrow ones, where only the first five show until asked.
+ * One row of cards, two ways of moving through it: on wide screens the page
+ * scroll slides it sideways (driven from SiteMotion); on narrow ones it is a
+ * swipe carousel, and the counter, rail and arrows below follow its position.
  */
 export default function ProjectGallery({ projects }: { projects: Project[] }) {
-  const [showAll, setShowAll] = useState(false);
+  const wrap = useRef<HTMLDivElement>(null);
+  const [index, setIndex] = useState(0);
+  // The closing "your project here" card is a slide too, but not a project.
+  const slides = projects.length + 1;
+  const shown = Math.min(index + 1, projects.length);
 
-  const reveal = () => {
-    setShowAll(true);
-    // The page just grew; every trigger below this section has moved.
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+  useEffect(() => {
+    const element = wrap.current;
+    if (!element) return;
+    const onScroll = () => {
+      const size = cardStep(element);
+      if (!size) return;
+      const current = Math.round(element.scrollLeft / size);
+      setIndex(Math.max(0, Math.min(slides - 1, current)));
+    };
+    element.addEventListener("scroll", onScroll, { passive: true });
+    return () => element.removeEventListener("scroll", onScroll);
+  }, [slides]);
+
+  const go = (direction: -1 | 1) => {
+    const target = Math.max(0, Math.min(slides - 1, index + direction));
+    wrap.current?.scrollTo({
+      left: target * cardStep(wrap.current),
+      behavior: "smooth",
+    });
   };
 
   return (
     <>
-      <div className="gx-h-wrap">
-        <div className={`gx-h-track${showAll ? " gx-all" : ""}`}>
+      <div className="gx-h-wrap" ref={wrap}>
+        <div className="gx-h-track">
           {projects.map((project) => {
             const external = /^https?:\/\//.test(project.url);
             const content: ReactNode = (
@@ -33,7 +61,7 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
                       src={project.image}
                       alt={`Projeto ${project.name}`}
                       fill
-                      sizes="(max-width: 899px) 104px, 40vw"
+                      sizes="(max-width: 899px) 80vw, 40vw"
                     />
                   </div>
                 </div>
@@ -83,15 +111,32 @@ export default function ProjectGallery({ projects }: { projects: Project[] }) {
         </div>
       </div>
       <div className="gx-wrap gx-h-foot">
-        {!showAll && projects.length > 5 && (
+        <div className="gx-h-ctrl">
+          <span className="gx-h-count">
+            {pad(shown)} / {pad(projects.length)}
+          </span>
+          <span className="gx-h-rail" aria-hidden="true">
+            <i style={{ transform: `scaleX(${shown / projects.length})` }} />
+          </span>
           <button
-            className="gx-btn gx-btn-ghost gx-only-mobile"
+            className="gx-h-nav"
             type="button"
-            onClick={reveal}
+            aria-label="Projeto anterior"
+            disabled={index === 0}
+            onClick={() => go(-1)}
           >
-            Ver os {projects.length} projetos
+            <ArrowLeft size={18} aria-hidden="true" />
           </button>
-        )}
+          <button
+            className="gx-h-nav"
+            type="button"
+            aria-label="Próximo projeto"
+            disabled={index >= slides - 1}
+            onClick={() => go(1)}
+          >
+            <ArrowRight size={18} aria-hidden="true" />
+          </button>
+        </div>
         <div className="gx-h-bar" aria-hidden="true">
           <i />
         </div>
