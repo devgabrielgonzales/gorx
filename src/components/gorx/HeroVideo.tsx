@@ -2,6 +2,8 @@
 import { useEffect, useRef, useSyncExternalStore } from "react";
 
 const subscribe = () => () => {};
+/** Bump when the video files change, so browsers do not mix cached pieces of the old file with the new one. */
+const VIDEO_VERSION = 3;
 
 /**
  * WebKit (Safari, and every browser on iOS) plays VP9 WebM but drops its alpha
@@ -21,7 +23,10 @@ export default function HeroVideo() {
     // The loop is decoration: viewers who asked for less motion keep the poster.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       video.current?.pause();
+      return;
     }
+    // Autoplay can be skipped when the element is swapped after hydration.
+    video.current?.play().catch(() => {});
   }, [opaque]);
 
   return (
@@ -41,9 +46,9 @@ export default function HeroVideo() {
           aria-label="Personagem da Gorx: uma estátua grega de óculos escuros digitando em um notebook"
         >
           {opaque ? (
-            <source src="/video/gorx-hero-personagem.mp4" type="video/mp4" />
+            <source src={`/video/gorx-hero-personagem.mp4?v=${VIDEO_VERSION}`} type="video/mp4" />
           ) : (
-            <source src="/video/gorx-hero-personagem.webm" type="video/webm" />
+            <source src={`/video/gorx-hero-personagem.webm?v=${VIDEO_VERSION}`} type="video/webm" />
           )}
         </video>
       </div>

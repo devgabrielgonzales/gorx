@@ -100,6 +100,8 @@
 /* GradientASCII fills the hero; the scrim keeps the copy readable over the lit characters */
 .gx-hero-ascii { position: absolute; inset: 0; overflow: hidden; }
 .gx-hero-ascii canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* the guide marks sit over the ASCII and under the scrim */
+.gx-hero-lines { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .gx-hero-scrim {
   position: absolute; inset: 0;
   background: linear-gradient(90deg, color-mix(in srgb, var(--bg) 88%, transparent) 0%, color-mix(in srgb, var(--bg) 66%, transparent) 40%, transparent 68%);

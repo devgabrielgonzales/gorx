@@ -12,6 +12,7 @@ import {
 } from "@/data/content";
 import CopyEmail from "./CopyEmail";
 import HeroBackground from "./HeroBackground";
+import HeroGuides from "./HeroGuides";
 import HeroVideo from "./HeroVideo";
 import PlanGrid from "./PlanGrid";
 import ProjectGallery from "./ProjectGallery";
@@ -54,6 +55,7 @@ export default function Site() {
         <section className="gx-hero" id="hero">
           <div className="gx-hero-bg" aria-hidden="true">
             <HeroBackground />
+            <HeroGuides />
             <div className="gx-hero-scrim" />
           </div>
 
