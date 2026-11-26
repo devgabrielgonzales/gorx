@@ -238,6 +238,122 @@ export const flow = {
   attributes: ["Código limpo", "Bem documentado", "Performático", "Escalável"],
 };
 
+/** Sections linked from the header and the mobile menu, in page order. */
+export const siteNav = [
+  { label: "Projetos", href: "#projetos" },
+  { label: "Serviços", href: "#servicos" },
+  { label: "Sobre", href: "#sobre" },
+  { label: "Processo", href: "#processo" },
+  { label: "Planos", href: "#planos" },
+];
+
+/** The order projects appear in on the home page. */
+export const projectOrder = [
+  "lavoro",
+  "ideal",
+  "dens",
+  "fortnari",
+  "atende",
+  "integrador",
+  "mailer",
+  "prospect",
+  "younus",
+];
+
+export type Service = {
+  title: string;
+  summary: string;
+  href: string;
+  isNew?: boolean;
+};
+
+export const services: Service[] = [
+  {
+    title: "Interfaces & Frontend",
+    summary: "Sites, apps e sistemas com foco em experiência e performance.",
+    href: "#contato",
+  },
+  {
+    title: "Backend & APIs",
+    summary: "Aplicações web, APIs REST e integrações entre plataformas.",
+    href: "#contato",
+  },
+  {
+    title: "UI/UX & Prototipação",
+    summary: "Do wireframe ao componente final, com consistência e identidade.",
+    href: "#contato",
+  },
+  {
+    title: "Social media & tráfego",
+    summary:
+      "Conteúdo semanal para Instagram e Facebook, com calendário, artes e anúncios.",
+    href: "#planos",
+    isNew: true,
+  },
+];
+
+export type Plan = {
+  id: string;
+  name: string;
+  audience: string;
+  /** Monthly price in reais. */
+  price: number;
+  recommended?: boolean;
+  features: { label: string; highlight?: boolean }[];
+};
+
+/**
+ * Set to true to show a "values are examples" notice above the plans, for when
+ * names, prices or items are still being decided.
+ */
+export const plansAreExamples = false;
+
+export const plans: Plan[] = [
+  {
+    id: "presenca",
+    name: "Presença",
+    audience: "Para quem está começando e precisa manter o perfil ativo.",
+    price: 1200,
+    features: [
+      { label: "6 postagens por semana", highlight: true },
+      { label: "Instagram e Facebook" },
+      { label: "Conteúdo orgânico" },
+      { label: "Artes e legendas prontas" },
+      { label: "Calendário editorial mensal" },
+      { label: "Relatório mensal de resultados" },
+    ],
+  },
+  {
+    id: "crescimento",
+    name: "Crescimento",
+    audience: "Para quem quer dobrar o ritmo e atrair mais gente para o perfil.",
+    price: 2200,
+    recommended: true,
+    features: [
+      { label: "12 postagens por semana", highlight: true },
+      { label: "Estratégia de tráfego orgânico", highlight: true },
+      { label: "Instagram e Facebook" },
+      { label: "Reels e stories na programação" },
+      { label: "Hashtags, SEO do perfil e horários" },
+      { label: "Relatório quinzenal de resultados" },
+    ],
+  },
+  {
+    id: "escala",
+    name: "Escala",
+    audience: "Para quem quer conteúdo, anúncios e site trabalhando juntos.",
+    price: 3900,
+    features: [
+      { label: "Tudo do Crescimento", highlight: true },
+      { label: "Tráfego pago no Meta Ads", highlight: true },
+      { label: "Vídeos curtos com motion e IA" },
+      { label: "Landing page para as campanhas" },
+      { label: "Reunião mensal de estratégia" },
+      { label: "Painel de resultados em tempo real" },
+    ],
+  },
+];
+
 export const social = [
   {
     label: "LinkedIn",
